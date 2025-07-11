@@ -5,7 +5,7 @@ import { ScrollToProjectCard } from "@/components/explore/scroll-to-project-card
 import { ReceiptPoundSterlingIcon } from "lucide-react";
 
 interface PageProps {
-  params: { workspaceId: string };
+  params: Promise<{ workspaceId: string }>;
 }
 
 export default async function WorkspaceHome({ params }: PageProps) {
