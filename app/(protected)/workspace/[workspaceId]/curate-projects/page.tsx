@@ -8,7 +8,7 @@ interface PageProps {
 
 export default async function CuratedProjectsPage({ params }: PageProps) {
   await userRequired();
-  const { workspaceId } =  params;
+  const { workspaceId } = await params;
 
   return (
     <main className="mx-auto max-w-6xl space-y-16 px-8 py-24 bg-gradient-to-b from-gray-50 to-white">
