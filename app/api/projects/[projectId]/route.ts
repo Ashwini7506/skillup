@@ -75,7 +75,7 @@ export async function PATCH(
 // Handle DELETE requests for project deletion
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;
