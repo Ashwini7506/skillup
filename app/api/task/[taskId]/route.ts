@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { taskId: string } }
+  { params }: { params: Promise<{ taskId: string }> }
 ) {
   const { searchParams } = new URL(req.url);
   const workspaceId = searchParams.get("workspaceId");
@@ -17,7 +17,8 @@ export async function DELETE(
   }
 
   try {
-    await deleteTaskById(params.taskId, workspaceId, projectId);
+    const { taskId } = await params;
+    await deleteTaskById(taskId, workspaceId, projectId);
     return NextResponse.json({ status: "success" });
   } catch (err) {
     console.error("[TASK_DELETE]", err);
