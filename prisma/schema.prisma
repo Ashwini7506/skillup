@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -8,90 +7,205 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProjectVisibility {
+  PERSONAL
+  PUBLIC
+}
+
+enum Difficulty {
+  NOOB
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum InvitationType {
+  WORKSPACE_INVITATION
+  PROJECT_INVITATION
+  USER_VERIFICATION
+}
+
+// Enhanced Activity Types (replaces NotificationType)
+enum ActivityType {
+  // Task activities
+  TASK_CREATED
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  TASK_UPDATED
+  TASK_DELETED
+  TASK_STATUS_CHANGED
+  SKILL_RATED
+
+  // Project activities
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_DELETED
+  PROJECT_MEMBER_JOINED
+  PROJECT_MEMBER_LEFT
+  PROJECT_INVITATION_SENT
+  PROJECT_INVITATION_ACCEPTED
+  PROJECT_INVITATION_DECLINED
+  PROJECT_COMMENT_ADDED
+
+  // Workspace activities
+  WORKSPACE_CREATED
+  WORKSPACE_UPDATED
+  WORKSPACE_MEMBER_JOINED
+  WORKSPACE_MEMBER_LEFT
+  WORKSPACE_INVITATION_SENT
+  WORKSPACE_INVITATION_ACCEPTED
+  WORKSPACE_INVITATION_DECLINED
+
+  // Join request activities
+  JOIN_REQUEST_SENT
+  JOIN_REQUEST_ACCEPTED
+  JOIN_REQUEST_DECLINED
+
+  // File activities
+  FILE_UPLOADED
+  FILE_DELETED
+
+  // General activities
+  USER_JOINED
+  PROFILE_UPDATED
+  ACHIEVEMENT_UNLOCKED
+  SYSTEM_UPDATE
+  REMINDER
+}
+
 model User {
-  id String@id
-  name String
-  email String@unique
-  about String?
-  // industryType String
-  role String
-  job String
-  workspace WorkspaceMember[]
-  image String?
-  tasks Task[]
-  activities Activity[]
-  comments Comment[]
-  subscription Subscription?
+  id                  String            @id
+  name                String
+  email               String            @unique
+  about               String?
+  role                String
+  job                 String
+  workspace           WorkspaceMember[]
+  image               String?
+  tasks               Task[]
+  activities          Activity[]
+  comments            Comment[]
+  subscription        Subscription?
+  onboardingCompleted Boolean           @default(false)
 
-  onboardingCompleted Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdProjects Project[]     @relation("CreatedProjects")
+  joinRequests    JoinRequest[] @relation("RecipientJoinRequests")
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  sentJoinRequests JoinRequest[] @relation("SenderJoinRequests")
+
+  sentMessages     Message[] @relation("MsgSender")
+  receivedMessages Message[] @relation("MsgReceiver")
+
+  invitationsSent InvitationToken[] @relation("InvitationSender")
+
+  positionOfResponsibility String[]
+  hardSkills String[]
+
+  username    String?  
+
+  currentRole String?  // new
+  experience String[]  // new
+
+  linkedinUrl String?  // new
+  githubUrl   String?  // new
+  resumeUrl   String?  // new
 }
 
-model Workspace{
-  id String @id @default(uuid())
-  name String
+model Workspace {
+  id          String            @id @default(uuid())
+  name        String
   description String?
-  ownerId String?
-  members WorkspaceMember[]
-  projects Project[]
-  inviteCode String @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  ownerId     String?
+  members     WorkspaceMember[]
+  projects    Project[]
+  inviteCode  String            @unique
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  invitations InvitationToken[]
 }
 
-enum AccessLevel{
+enum AccessLevel {
   OWNER
   MEMBER
   VIEWER
 }
-model WorkspaceMember{
-  id String @id @default(uuid())
-  userId String
-  user User @relation(fields:[userId],references:[id], onDelete: Cascade)
-  workspaceId String
-  workspace Workspace @relation(fields:[workspaceId], references:[id], onDelete:Cascade)
-  accessLevel AccessLevel @default(MEMBER)
+
+model WorkspaceMember {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId   String
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  accessLevel   AccessLevel     @default(MEMBER)
   projectAccess ProjectAccess[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
   @@unique([userId, workspaceId])
 }
 
-model Project{
-  id String @id @default(uuid())
-  name String
-  description String?
-  workspaceId String
-  Workspace Workspace @relation(fields:[workspaceId], references:[id], onDelete:Cascade)
-  tasks Task[]
-  activities Activity[]
-  comments Comment[]
+model Project {
+  id            String          @id @default(uuid())
+  name          String
+  description   String?
+  workspaceId   String
+  Workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks         Task[]
+  activities    Activity[]
+  comments      Comment[]
   projectAccess ProjectAccess[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   documentation Documentation[]
 
-  @@index([workspaceId])
+  visibility ProjectVisibility @default(PERSONAL)
+  difficulty Difficulty?
+  role       String?
 
-}
+  createdById String?
+  createdBy   User?   @relation("CreatedProjects", fields: [createdById], references: [id])
 
-model ProjectAccess{
-  id String @id @default(uuid())
-  workspaceMemberId String
-  workspaceMember WorkspaceMember @relation(fields: [workspaceMemberId], references: [id], onDelete: Cascade)
-
-  projectId String
-  Project Project @relation(fields: [projectId], references: [id], onDelete: Cascade) 
-  hasAccess Boolean @default(false)
+  joinRequests JoinRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  invitations InvitationToken[]
+}
+
+model ProjectAccess {
+  id                String          @id @default(uuid())
+  workspaceMemberId String
+  workspaceMember   WorkspaceMember @relation(fields: [workspaceMemberId], references: [id], onDelete: Cascade)
+  projectId         String
+  Project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  hasAccess         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
   @@unique([workspaceMemberId, projectId])
 }
 
-enum TaskStatus{
+model InvitationToken {
+  id          String         @id @default(cuid())
+  email       String
+  token       String         @unique
+  expiresAt   DateTime
+  used        Boolean        @default(false)
+  type        InvitationType
+  workspaceId String?
+  projectId   String?
+  invitedBy   String
+  createdAt   DateTime       @default(now())
+
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project   Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inviter   User       @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@map("invitation_tokens")
+}
+
+enum TaskStatus {
   TODO
   IN_PROGRESS
   COMPLETED
@@ -100,118 +214,177 @@ enum TaskStatus{
   BLOCKED
 }
 
-enum TaskPriority{
+enum TaskPriority {
   LOW
   HIGH
   MEDIUM
   CRITICAL
 }
 
-model Task{
-  id String @id @default(cuid())
-  title String
+model Task {
+  id          String       @id @default(cuid())
+  title       String
   description String?
-  status TaskStatus @default(TODO)
-  priority TaskPriority @default(LOW)
-  startDate DateTime
-  dueDate DateTime
-  position Int
-  projectId String
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assigneeId String?
-  assignedTo User? @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(LOW)
+  startDate   DateTime
+  dueDate     DateTime
+  position    Int
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspaceId String
+  assigneeId  String?
+  assignedTo  User?        @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
   attachments File[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
-model Activity{
-  id String @id @default(cuid())
-  type String
+// OPTIMIZED Activity model - uses existing relationships to derive actor info
+model Activity {
+  id          String       @id @default(cuid())
+  type        ActivityType
   description String
-  projectId String
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Required: Every activity has a recipient user
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Use existing relationships to get actor information
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Join request relation - actor can be derived from joinRequest.requester
+  joinRequestId String?
+  joinRequest   JoinRequest? @relation(fields: [joinRequestId], references: [id], onDelete: Cascade)
+
+  // Store other related IDs as strings (no FK constraints)
+  taskId      String? // Task ID if task-related
+  commentId   String? // Comment ID if comment-related
+  workspaceId String? // Workspace ID if workspace-related
+  fileId      String? // File ID if file-related
+
+  // Notification-like properties
+  read Boolean @default(false)
+
+  // Store additional context as JSON including actor info when needed
+  metadata Json? // { actorId: "user123", actorName: "John Doe", taskTitle: "Fix Bug", etc. }
+
   createdAt DateTime @default(now())
 
   @@index([projectId])
   @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([joinRequestId])
 }
 
-model Comment{
-  id String @id @default(cuid())
-  content String
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
   projectId String
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([projectId])
   @@index([userId])
 }
 
-model Documentation{
-  id String @id @default(uuid())
-  content String
-  projectId String @unique
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  // userId String
-  // user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Documentation {
+  id        String   @id @default(uuid())
+  content   String
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   updatedBy String?
 }
 
-enum FileType{
+enum FileType {
   IMAGE
   PDF
 }
 
-model File{
-  id String @id @default(uuid())
-  name String
-  url String
-  type FileType
-  taskId String?
-  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  // projectId String
-  // project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  // userId String
-  // user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  type      FileType
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
-enum SubscriptionPlan{
+model JoinRequest {
+  id String @id @default(cuid())
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("RecipientJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+
+  requesterId String
+  requester   User   @relation("SenderJoinRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+
+  // Relation to activities
+  activities Activity[]
+
+  @@unique([requesterId, userId, projectId])
+  @@index([projectId])
+  @@index([userId])
+  @@index([requesterId])
+}
+
+enum SubscriptionPlan {
   FREE
   PRO
   ENTERPRISE
+}
 
-} 
-
-enum SubscriptionStatus{
+enum SubscriptionStatus {
   ACTIVE
   CANCELLED
   EXPIRED
   PAST_DUE
 }
 
-model Subscription{
-  id String @id @default(uuid())
-  userId String @unique
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan SubscriptionPlan @default(FREE)
-  status SubscriptionStatus @default(ACTIVE)
-  lemonsqueezyId String?
-  orderId String?
-  customerId String?
-  currentPeriodEnd DateTime?
-  frequency String @default("monthly")
-  cancelAtPeriodEnd Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Subscription {
+  id                String             @id @default(uuid())
+  userId            String             @unique
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan              SubscriptionPlan   @default(FREE)
+  status            SubscriptionStatus @default(ACTIVE)
+  lemonsqueezyId    String?
+  orderId           String?
+  customerId        String?
+  currentPeriodEnd  DateTime?
+  frequency         String             @default("monthly")
+  cancelAtPeriodEnd Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@index([userId])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User? @relation("MsgSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User  @relation("MsgReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([senderId])
 }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme-provider";
+import Head from "next/head";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,9 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
 
+          {/* ✅ Razorpay Script */}
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { userRequired } from "./is-user-authenticated"
-import { _success } from "zod/v4/core"
+import { User } from "@prisma/client"
 
 export const getUserById = async()=> {
     try{

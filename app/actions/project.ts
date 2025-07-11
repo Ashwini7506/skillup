@@ -41,26 +41,32 @@ export const createNewProject = async (data: ProjectDataType) => {
         validatedata?.memberAccess?.push(user?.id as string)
     }
 
-   await db.project.create({
-        data: {
-            name: validatedata.name,
-            description: validatedata.description || "",
-            workspaceId:validatedata.workspaceId,
-            projectAccess: {
-                create: validatedata.memberAccess?.map((memberId) => ({
-                    workspaceMemberId: workspaceMemberMembers.find((member) => member.userId === memberId)?.id!,
-                    hasAccess: true,
-                }))
-            },
-            activities:{
-                create:{
-                    type:"PROJECT_CREATED",
-                    description:`created project ${validatedata.name}`,
-                    userId: user?.id as string
-                }
-            }
-        }
-    })
+await db.project.create({
+  data: {
+    name: validatedata.name,
+    description: validatedata.description || "",
+    workspaceId: validatedata.workspaceId,
+    role: validatedata.role, // ✅ new
+    difficulty: validatedata.level.toUpperCase() as "NOOB" | "INTERMEDIATE" | "ADVANCED", // ✅ new
+    visibility: "PUBLIC", // or keep PERSONAL if that's default for user-created
+    projectAccess: {
+      create: validatedata.memberAccess?.map((memberId) => ({
+        workspaceMemberId: workspaceMemberMembers.find((member) => member.userId === memberId)?.id!,
+        hasAccess: true,
+      })),
+    },
+    activities: {
+      create: {
+        type: "PROJECT_CREATED",
+        description: `created project ${validatedata.name}`,
+        userId: user?.id as string,
+      },
+    },
+  },
+});
+
+
+
 
 }
 

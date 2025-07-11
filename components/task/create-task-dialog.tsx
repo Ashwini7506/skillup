@@ -112,7 +112,7 @@ export const CreateTaskDialog = ({ project }: Props) => {
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Task Name</FormLabel>
+                                    <FormLabel>Task Name*</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="Enter task title"
@@ -130,7 +130,7 @@ export const CreateTaskDialog = ({ project }: Props) => {
                                 name="assigneeId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Assignee</FormLabel>
+                                        <FormLabel>Assignee*</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}

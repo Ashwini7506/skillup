@@ -31,7 +31,7 @@ const tasks = await db.task.findMany({
     where:{projectId},
 })
 
-const lastTask = tasks?.filter(task=>task.status === data.status).sort((a,b)=>b.position = a.position)[0]
+const lastTask = tasks?.filter(task=>task.status === data.status).sort((a,b)=>b.position - a.position)[0]
 
 const position = lastTask? lastTask.position+1000:1000;
    const task = await db.task.create({
@@ -41,6 +41,7 @@ const position = lastTask? lastTask.position+1000:1000;
             startDate: new Date(validateData.startDate),
             dueDate: new Date(validateData.dueDate),
             projectId,
+            workspaceId,
             assigneeId: validateData.assigneeId,
             status:validateData.status,
             priority: validateData.priority,

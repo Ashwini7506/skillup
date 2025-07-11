@@ -1,5 +1,6 @@
-import { Description } from "@radix-ui/react-dialog"
 import {z} from "zod"
+
+
 export const userSchema = z.object({
     name:z.string().min(2,"Name is required").max(200,"maximum is 200 characters"),
     about: z.string().optional(),
@@ -16,11 +17,16 @@ export const workspaceSchema = z.object({
 })
 
 export const projectSchema = z.object({
-    name : z.string().min(3, {message:"Project name must be atleast 2 characters"}),
-    workspaceId: z.string(),
-    description : z.string().optional(),
-    memberAccess : z.array(z.string()).optional(),
-})
+  name: z.string().min(3, { message: "Project name must be at least 2 characters" }),
+  workspaceId: z.string(),
+  description: z.string().optional(),
+  memberAccess: z.array(z.string()).optional(),
+  invitedEmails: z.array(z.string().email()).optional(),
+
+  // ✅ Add these two
+  role: z.string().min(1, "Role is required"),
+  level: z.enum(["noob", "intermediate", "advanced"]),
+});
 
 
 export const taskFormSchema = z.object ( {

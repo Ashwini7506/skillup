@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pie, PieChart, Label } from "recharts";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
@@ -23,6 +23,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const TaskDistributionChart = ({ tasks }: TaskDistributionProps) => {
+  const [hasMounted, setHasMounted] = useState(false);
+
   const data = [
     { name: "Completed", value: tasks.completed || 0, fill: "#22c55e" },
     { name: "In progress", value: tasks.inProgress || 0, fill: "#f59e0b" },
@@ -34,11 +36,9 @@ export const TaskDistributionChart = ({ tasks }: TaskDistributionProps) => {
     },
   ].filter((item) => item.value > 0 && !isNaN(item.value));
 
-  if (data.length === 0) {
-    return <div>No data to display</div>;
-  }
-
   useEffect(() => {
+    setHasMounted(true);
+
     const updateTextColor = () => {
       const isDarkTheme = document.documentElement.classList.contains('dark');
       const textElements = document.querySelectorAll('.recharts-text tspan');
@@ -46,10 +46,17 @@ export const TaskDistributionChart = ({ tasks }: TaskDistributionProps) => {
         element.setAttribute('class', isDarkTheme ? 'text-white' : 'text-black');
       });
     };
+
     updateTextColor();
     window.addEventListener('theme-change', updateTextColor);
     return () => window.removeEventListener('theme-change', updateTextColor);
   }, []);
+
+  if (!hasMounted) return null;
+
+  if (data.length === 0) {
+    return <div>No data to display</div>;
+  }
 
   return (
     <Card className="flex flex-col">
@@ -130,13 +137,3 @@ export const TaskDistributionChart = ({ tasks }: TaskDistributionProps) => {
     </Card>
   );
 };
-
-// </xaiArtifact>
-
-// ### Changes Made:
-// - Added a `useEffect` hook to dynamically update the text color based on the theme.
-// - Listens for a custom `theme-change` event (assumed to be triggered by your theme toggle) or checks the `dark` class on the document root.
-// - Updates the `tspan` elements' `className` to `text-white` for dark mode and `text-black` for light mode.
-// - Ensures the effect cleans up the event listener on component unmount.
-
-// Note: This assumes your theme toggle dispatches a `theme-change` event. If it uses a different mechanism (e.g., a context or state change), you might need to adjust the event listener or use a context API to detect theme changes. Let me know if you need further customization!

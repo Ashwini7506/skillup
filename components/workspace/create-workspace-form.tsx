@@ -14,6 +14,7 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { useRouter } from 'next/navigation';
 import { createNewWorkspace } from '@/app/actions/workspace';
+import Link from 'next/link';
 
 export type CreateWorkspaceDataType = z.infer<typeof workspaceSchema>;
 
@@ -31,7 +32,7 @@ export const CreateWorkspaceform = () => {
     const onSubmit = async (data: CreateWorkspaceDataType) => {
         try {
             setPending(true);
-            const {data: res} = await createNewWorkspace(data); // Your API call here
+            const { data: res } = await createNewWorkspace(data); // Your API call here
             toast.success("Grwothspace created successfully");
 
             router.push(`/workspace/${res?.id as string}`)
@@ -87,9 +88,14 @@ export const CreateWorkspaceform = () => {
                             />
 
                             <div className="flex gap-3 justify-end">
-                                <Button type="button" variant="outline" disabled={pending}>
-                                    Cancel
-                                </Button>
+
+                                <Link href={`/workspace/`}>
+
+                                    <Button type="button" variant="outline" disabled={pending}>
+                                        Cancel
+                                    </Button>
+                                </Link>
+
                                 <Button type="submit" disabled={pending}>
                                     {pending ? "Creating..." : "Create growthspace"}
                                 </Button>

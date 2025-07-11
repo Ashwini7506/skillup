@@ -5,10 +5,11 @@ import { WorkspaceProps } from "@/utils/types"
 import { useEffect, useState } from "react"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar"
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu"
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSubTrigger, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { WorkspaceAvatar } from "../workspace/workspace-avatar"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { DeleteWorkspace } from "../workspace/delete-workspace"
 
 export const WorkspaceSelector = ({ workspaces }: { workspaces: WorkspaceProps[] }) => {
 
@@ -48,14 +49,18 @@ export const WorkspaceSelector = ({ workspaces }: { workspaces: WorkspaceProps[]
                     <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
                         {workspaces?.map((workspace) => (
                             <DropdownMenuItem key={workspace.id} onSelect={() => onWorkspaceSelect(workspace?.workspaceId!)}>
-                                <div className=" flex flex-row items-center gap-2">
-                                    <WorkspaceAvatar
-                                        name={workspace?.workspace.name as string} />
-                                    <p>{workspace?.workspace.name}</p>
+                                <div className="flex flex-row items-center gap-2 w-full">
+                                    <WorkspaceAvatar name={workspace?.workspace.name as string} />
+                                    <p className="flex-1">{workspace?.workspace.name}</p>
+                                    
+                                    {workspace.workspaceId === workspaceId ? (
+                                        <Check className="ml-auto" />
+                                    ) : (
+                                        <div className="py-1" onClick={(e) => e.stopPropagation()}>
+                                            <DeleteWorkspace workspaceId={workspace.workspaceId} />
+                                        </div>
+                                    )}
                                 </div>
-                                {workspace.workspaceId === workspaceId && (
-                                    <Check className="ml-auto" />
-                                )}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>

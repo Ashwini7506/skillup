@@ -23,9 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { projectSchema } from "@/lib/schema";
+import joblists from "@/utils/joblists";
 import { WorkspaceMembersProps } from "@/utils/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -165,12 +167,60 @@ export const CreateProjectForm = ({ workspaceMembers }: Props) => {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="role"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Target Role</FormLabel>
+                                    <FormControl>
+                                        <select
+                                            className="border rounded-md px-3 py-2 w-full"
+                                            value={field.value}
+                                            onChange={(e) => field.onChange(e.target.value)}
+                                        >
+                                            <option value="">Select a role</option>
+                                            {joblists.map((job) => (
+                                                <option key={job} value={job}>
+                                                    {job}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="level"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Difficulty Level</FormLabel>
+                                    <FormControl>
+                                        <select
+                                            className="border rounded-md px-3 py-2 w-full"
+                                            value={field.value}
+                                            onChange={(e) => field.onChange(e.target.value)}
+                                        >
+                                            <option value="">Select difficulty</option>
+                                            <option value="noob">Noob</option>
+                                            <option value="intermediate">Intermediate</option>
+                                            <option value="advanced">Advanced</option>
+                                        </select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         {/* Action Buttons */}
                         <div className="flex gap-3 justify-end pt-2">
                             <Button type="button" variant="outline" disabled={pending}>
-                                Cancel
-                            </Button>
+                                <Link href={`/workspace/${workspaceId}/`}>
+                                    Cancel
+                                </Link>                            </Button>
                             <Button type="submit" disabled={pending}>
                                 {pending ? "Creating..." : "Create Project"}
                             </Button>

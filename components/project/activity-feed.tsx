@@ -30,9 +30,9 @@ export const ActivityFeed =({activities}:ActivityFeedProps) => {
 
                 <div className="flex flex-col">
                     <p className="text-sm">
-                        <span className="font-meduim">
+                        <span className="font-medium">
                             {activity.user.name}
-                        </span>
+                        </span>{" "}
                         {activity.description}
                     </p>
                     <span className="text-sx text-muted-foreground">

@@ -1,4 +1,3 @@
-import { getProjectDetails } from '@/app/data/project/get-project-details';
 import { ProjectTableContainer } from '@/components/project/project-table-container';
 import { ProjectDashboard } from '@/components/project/project-dashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,6 +5,7 @@ import { CommentProps, ProjectProps, ProjectTaskProps } from '@/utils/types';
 import Link from 'next/link';
 import React from 'react'
 import { Projectkanban } from '@/components/project/project-kanban';
+import { getProjectDetails } from '@/app/data/project/get-project-details';
 
 interface ProjectPageProps{
   params : Promise<{workspaceId : string; projectId:string}>;
@@ -17,7 +17,7 @@ const ProjectPage = async(props:ProjectPageProps) => {
   const searchParams = await props.searchParams;
   
 
-  const {project, tasks, comments,activities,totalWorkspaceMembers}  = await getProjectDetails(workspaceId, projectId)
+  const {project, tasks, comments,activities,totalWorkspaceMembers,accessLevel}  = await getProjectDetails(workspaceId, projectId)
   
   return (
     <div className='flex flex-col gap-6 pb-3 px-3'>
@@ -46,7 +46,7 @@ const ProjectPage = async(props:ProjectPageProps) => {
         activities = {activities!}
         totalWorkspaceMembers = {totalWorkspaceMembers!}
         comments = { comments as CommentProps[] }
-
+        accessLevel={accessLevel ?? "MEMBER"} // Provide default value to avoid undefined
         />
         </TabsContent>
         <TabsContent value='table'>
