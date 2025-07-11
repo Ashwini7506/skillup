@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 // Configuration for skillup team
-export const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
+const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
 
 // Utility function to add days to a date
-export const addDays = (date: Date, days: number) => {
+const addDays = (date: Date, days: number) => {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
