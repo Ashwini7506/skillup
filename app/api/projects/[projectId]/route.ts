@@ -4,7 +4,7 @@ import { userRequired } from "@/app/data/user/is-user-authenticated";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;
