@@ -3,11 +3,11 @@ import { userRequired } from "@/app/data/user/is-user-authenticated";
 import { DiscoverClient } from "@/components/discover/discoverClient";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     workspaceId: string;
     role: string;
     level: "noob" | "intermediate" | "advanced";
-  };
+  }>;
 }
 
 export default async function DiscoverPage({ params }: PageProps) {
