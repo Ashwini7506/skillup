@@ -135,7 +135,7 @@ export async function DELETE(
 // Handle GET request for fetching project details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;
