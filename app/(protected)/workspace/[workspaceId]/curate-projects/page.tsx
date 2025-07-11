@@ -3,7 +3,7 @@ import { CurateProjectForm } from "@/components/curateprojects/curate-projects-f
 import { Rocket } from "lucide-react";
 
 interface PageProps {
-  params: { workspaceId: string };
+  params: Promise<{ workspaceId: string }>;
 }
 
 export default async function CuratedProjectsPage({ params }: PageProps) {
