@@ -38,9 +38,9 @@ interface Message {
 }
 
 interface MembersPageProps {
-  params: {
+  params: Promise<{
     workspaceId: string;
-  };
+  }>;
 }
 
 interface MembersSearchProps {
@@ -91,7 +91,7 @@ interface RequestsPaneProps {
 }
 
 export default function MembersPage({ params }: MembersPageProps) {
-  const { workspaceId } =  params;
+  const { workspaceId } =  use(params);
   const { user } = useKindeBrowserClient();
   const userId = user?.id;
   const [activeTab, setActiveTab] = useState('discover');
