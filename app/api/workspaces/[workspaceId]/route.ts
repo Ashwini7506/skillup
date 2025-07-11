@@ -3,10 +3,11 @@ import { deleteWorkspaceById } from "@/app/data/workspace/delete-workspace-by-id
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { workspaceId: string } }
+  { params }: { params: Promise<{ workspaceId: string } >}
 ) {
   try {
-    await deleteWorkspaceById(params.workspaceId);
+    const { workspaceId } = await params;
+    await deleteWorkspaceById(workspaceId);
     return new NextResponse(null, { status: 204 }); // no body with 204
   } catch (err) {
     console.error("[WORKSPACE_DELETE]", err);

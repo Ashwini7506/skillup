@@ -4,10 +4,10 @@ import { userRequired } from '@/app/data/user/is-user-authenticated';
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { projectId: string; workspaceMemberId: string } }
+  { params }: { params: Promise<{ projectId: string; workspaceMemberId: string }> }
 ) {
   try {
-    const { projectId, workspaceMemberId } = params;
+    const { projectId, workspaceMemberId } = await params;
     const { user } = await userRequired();
 
     if (!user?.id) {

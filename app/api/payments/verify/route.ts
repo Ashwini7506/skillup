@@ -3,8 +3,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { db } from '@/lib/db';
-import { addDays } from '../../subscription/route';
-// import { addDays } from '@/lib/utils';
+
+
+const addDays = (date: Date, days: number) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
 
 export async function POST(req: NextRequest) {
   const body = await req.json();

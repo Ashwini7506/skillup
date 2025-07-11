@@ -4,7 +4,7 @@ import { userRequired } from "@/app/data/user/is-user-authenticated";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;
@@ -75,7 +75,7 @@ export async function PATCH(
 // Handle DELETE requests for project deletion
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;
@@ -135,7 +135,7 @@ export async function DELETE(
 // Handle GET request for fetching project details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const { projectId } = await params;

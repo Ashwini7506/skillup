@@ -9,10 +9,10 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
     
     // Check if current user is a collaborator or if it's a public profile
     // For now, we'll skip this check but in production you'd verify access
