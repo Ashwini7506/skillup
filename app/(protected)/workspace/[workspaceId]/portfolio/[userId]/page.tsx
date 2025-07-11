@@ -10,9 +10,9 @@ import { UserPortfolio } from '@/utils/types';
 import { db } from '@/lib/db';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 }
 
 async function getUserPortfolio(userId: string): Promise<UserPortfolio | null> {
@@ -54,7 +54,7 @@ function getUserMetadata(activities: any[]) {
 }
 
 export default async function Portfolio({ params }: PageProps) {
-  const userId = params.userId;
+  const {userId} = await params;
   const user = await getUserPortfolio(userId);
 
   if (!user) {
