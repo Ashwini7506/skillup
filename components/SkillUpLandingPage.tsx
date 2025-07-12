@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,6 +7,8 @@ import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components
 import Link from "next/link";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import joblists from "@/utils/joblists";
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 import { 
   Users, 
   FolderOpen, 
@@ -24,18 +27,24 @@ import {
   Sparkles,
   Zap,
   Target,
-  ReceiptPoundSterlingIcon
+  ReceiptPoundSterlingIcon,
+  Clock,
+  Star
 } from 'lucide-react';
 
 interface SkillUpLandingPageProps {
   isLoggedIn: boolean;
+  user?: { id: string }; // Add user prop for pricing integration
 }
 
-const SkillUpLandingPage = ({ isLoggedIn }: SkillUpLandingPageProps) => {
+const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedPlan, setSelectedPlan] = useState<string>('FREE');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const typewriterText = useTypewriter({
     words: joblists,
@@ -105,50 +114,102 @@ const SkillUpLandingPage = ({ isLoggedIn }: SkillUpLandingPageProps) => {
 
   const pricingPlans = [
     {
-      name: "Free",
-      price: "$0",
-      period: "forever",
+      id: 'FREE',
+      name: 'Free',
+      price: '₹0',
+      period: '3-day trial',
+      description: 'Perfect for trying out our platform',
+      icon: Clock,
       features: [
-        "Basic portfolio",
-        "Limited projects",
-        "Basic collaboration",
-        "Community access"
-      ],
-      gradient: "from-gray-100 to-gray-200",
-      textColor: "text-gray-900",
-      popular: false
+        'Access to basic features',
+        '3-day trial period',
+        'Community support',
+        'Basic templates',
+        'Limited projects'
+      ]
     },
     {
-      name: "Pro",
-      price: "$9.99",
-      period: "per month",
+      id: 'PRO',
+      name: 'Pro',
+      price: '₹50',
+      period: 'month',
+      description: 'Best for individual professionals',
+      icon: Star,
+      popular: true,
       features: [
-        "Advanced portfolio",
-        "Unlimited projects",
-        "Advanced collaboration",
-        "Analytics dashboard",
-        "Priority support"
-      ],
-      gradient: "from-blue-500 to-purple-600",
-      textColor: "text-white",
-      popular: true
+        'All Free features',
+        'Unlimited projects',
+        'Advanced templates',
+        'Priority support',
+        'Export capabilities',
+        'Analytics dashboard'
+      ]
     },
     {
-      name: "Enterprise",
-      price: "$29.99",
-      period: "per month",
+      id: 'ENTERPRISE',
+      name: 'Enterprise',
+      price: '₹120',
+      period: 'quarter',
+      description: 'Ideal for teams and organizations',
+      icon: Zap,
       features: [
-        "Everything in Pro",
-        "Team management",
-        "Custom branding",
-        "Advanced analytics",
-        "Dedicated support"
-      ],
-      gradient: "from-purple-600 to-pink-600",
-      textColor: "text-white",
-      popular: false
+        'All Pro features',
+        'Team collaboration',
+        'Advanced analytics',
+        'Custom integrations',
+        'Dedicated support',
+        'Custom branding',
+        'API access'
+      ]
     }
   ];
+
+  const handlePlanSelection = async (planId: string) => {
+    if (!user?.id) {
+      toast.error('Please sign in to select a plan');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (planId === 'FREE') {
+        // For free plan, just create the subscription via GET request
+        const response = await fetch(`/api/subscription?userId=${user.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to create free subscription');
+        }
+
+        toast.success('Free trial started! Welcome aboard!');
+      } else {
+        // For paid plans, upgrade the subscription
+        const response = await fetch('/api/subscription/upgrade', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            plan: planId
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to upgrade subscription');
+        }
+
+        toast.success(`Successfully subscribed to ${planId} plan!`);
+      }
+
+      // Redirect to dashboard
+      router.push('/dashboard');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to set up subscription');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -446,61 +507,117 @@ const SkillUpLandingPage = ({ isLoggedIn }: SkillUpLandingPageProps) => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative rounded-3xl p-8 transition-all duration-300 hover:scale-105 ${
-                  plan.popular
-                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-2xl scale-105'
-                    : 'bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl border border-white/20'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                      Most Popular
+            {pricingPlans.map((plan) => {
+              const Icon = plan.icon;
+              const isSelected = selectedPlan === plan.id;
+              
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative rounded-3xl p-8 transition-all duration-300 hover:scale-105 cursor-pointer ${
+                    plan.popular
+                      ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-2xl scale-105'
+                      : isSelected
+                      ? 'bg-white/80 backdrop-blur-sm shadow-xl border-2 border-blue-500'
+                      : 'bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl border border-white/20'
+                  }`}
+                  onClick={() => setSelectedPlan(plan.id)}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        Most Popular
+                      </div>
+                    </div>
+                  )}
+
+                  {isSelected && !plan.popular && (
+                    <div className="absolute -top-4 right-4">
+                      <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        Selected
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="text-center mb-8">
+                    <div className="flex justify-center mb-4">
+                      <div className={`p-3 rounded-full ${
+                        plan.popular ? 'bg-white/20' : 'bg-gray-100'
+                      }`}>
+                        <Icon className={`h-6 w-6 ${
+                          plan.popular ? 'text-white' : 'text-gray-600'
+                        }`} />
+                      </div>
+                    </div>
+                    
+                    <h3 className={`text-2xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                      {plan.name}
+                    </h3>
+                    <p className={`text-sm mb-4 ${plan.popular ? 'text-white/80' : 'text-gray-600'}`}>
+                      {plan.description}
+                    </p>
+                    <div className="mb-4">
+                      <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                        {plan.price}
+                      </span>
+                      <span className={`text-sm ${plan.popular ? 'text-white/80' : 'text-gray-600'}`}>
+                        /{plan.period}
+                      </span>
                     </div>
                   </div>
-                )}
 
-                <div className="text-center mb-8">
-                  <h3 className={`text-2xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
-                    {plan.name}
-                  </h3>
-                  <div className="mb-4">
-                    <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
-                      {plan.price}
-                    </span>
-                    <span className={`text-sm ${plan.popular ? 'text-white/80' : 'text-gray-600'}`}>
-                      /{plan.period}
-                    </span>
-                  </div>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start space-x-3">
+                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                          plan.popular ? 'text-white' : 'text-green-600'
+                        }`} />
+                        <span className={plan.popular ? 'text-white' : 'text-gray-700'}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    className={`w-full py-3 transition-all duration-300 ${
+                      isSelected
+                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                        : plan.popular
+                        ? 'bg-white text-blue-600 hover:bg-gray-100'
+                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlanSelection(plan.id);
+                    }}
+                    disabled={loading}
+                  >
+                    {loading && selectedPlan === plan.id ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        Setting up...
+                      </div>
+                    ) : isSelected ? (
+                      'Get Started'
+                    ) : (
+                      'Select Plan'
+                    )}
+                  </Button>
                 </div>
+              );
+            })}
+          </div>
 
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start space-x-3">
-                      <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                        plan.popular ? 'text-white' : 'text-green-600'
-                      }`} />
-                      <span className={plan.popular ? 'text-white' : 'text-gray-700'}>
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  className={`w-full py-3 ${
-                    plan.popular
-                      ? 'bg-white text-blue-600 hover:bg-gray-100'
-                      : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                  }`}
-                >
-                  {plan.name === 'Free' ? 'Get Started' : 'Choose Plan'}
-                </Button>
-              </div>
-            ))}
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">
+              Questions about our plans? <a href="#" className="text-blue-600 hover:underline">Contact our team</a>
+            </p>
+            <div className="flex justify-center items-center gap-4 text-sm text-gray-500">
+              <span>✓ No setup fees</span>
+              <span>✓ Cancel anytime</span>
+              <span>✓ 30-day money-back guarantee</span>
+            </div>
           </div>
         </div>
       </section>
@@ -523,21 +640,6 @@ const SkillUpLandingPage = ({ isLoggedIn }: SkillUpLandingPageProps) => {
                 personalized learning experiences and real-world projects.
               </p>
             </div>
-            
-            {/* <div>
-              <h4 className="text-xl font-semibold mb-6">Quick Links</h4>
-              <ul className="space-y-3">
-                <li><a href="/projects" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">📁</span> Projects
-                </a></li>
-                <li><a href="/blogs" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">📚</span> Blogs
-                </a></li>
-                <li><a href="/members" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">👥</span> Members
-                </a></li>
-              </ul>
-            </div> */}
             
             <div>
               <h4 className="text-xl font-semibold mb-6">Support</h4>
