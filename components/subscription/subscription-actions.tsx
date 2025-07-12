@@ -81,7 +81,7 @@ export function SubscriptionActions({ subscription, onUpdateAction }: Subscripti
         if (!data.orderId) throw new Error('Failed to create Razorpay order');
 
         const razorpay = new (window as any).Razorpay({
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          key: process.env.RAZORPAY_KEY_ID,
           name: 'SkillUp',
           description: `${plan} Plan Subscription`,
           order_id: data.orderId,
