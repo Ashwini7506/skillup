@@ -37,12 +37,6 @@ export default function RootLayout({
           {/* ✅ Razorpay Script */}
           <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
-
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
             {children}
 
 
