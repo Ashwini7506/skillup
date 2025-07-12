@@ -62,6 +62,7 @@ export const Onboardingform = ({ name, email, image }: Props) => {
         try{
             setPending(true);
             await createUser(data);
+            toast.success("Keep browser scale close to 80% for best experience")
         }catch(error){
             console.log(error)
             toast.error("Please make a growthspace account to continue")
