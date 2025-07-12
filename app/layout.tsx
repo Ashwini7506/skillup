@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
 import { AuthProvider } from "@/components/AuthProvider";
-import { Toaster } from "sonner";
-import MixpanelProvider from "@/components/MixpanelProvider";
-// import MixpanelProvider from "@/components/MixpanelProvider"; // We'll create this component
+import { Toaster } from "sonner"
+import { ThemeProvider } from "@/components/theme-provider";
+import Head from "next/head";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,15 +34,16 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {/* ✅ Razorpay Script */}
-          <Script 
-            src="https://checkout.razorpay.com/v1/checkout.js" 
-            strategy="beforeInteractive"
-          />
-          
-          {/* ✅ Mixpanel Integration */}
-          <MixpanelProvider>
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             {children}
-          </MixpanelProvider>
+          </ThemeProvider>
 
           <Toaster richColors/>
         </body>
