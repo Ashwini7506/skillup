@@ -64,7 +64,7 @@ export const Onboardingform = ({ name, email, image }: Props) => {
             await createUser(data);
         }catch(error){
             console.log(error)
-            toast.error("something went wrong")
+            toast.error("Please make a growthspace account to continue")
         }
     };
 
