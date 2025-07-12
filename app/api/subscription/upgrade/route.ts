@@ -7,6 +7,7 @@ const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
 const addDays = (date: Date, days: number) => {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
+   result.setHours(23, 59, 59, 999)
   return result;
 };
 
