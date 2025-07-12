@@ -1,4 +1,5 @@
 import { getUserWorkspaces } from '@/app/data/workspace/get-user-workspace'
+import Tracker from '@/components/Tracker'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
@@ -14,5 +15,5 @@ const page = async() => {
         redirect(`/workspace/${data?.workspace[0].workspaceId}`)
     }
 }
-
+<Tracker />
 export default page

@@ -1,6 +1,7 @@
 import { getRoleLabelFromSlug } from "@/utils/roleMap";
 import { userRequired } from "@/app/data/user/is-user-authenticated";
 import { DiscoverClient } from "@/components/discover/discoverClient";
+import Tracker from "@/components/Tracker";
 
 interface PageProps {
   params: Promise<{
@@ -18,6 +19,7 @@ export default async function DiscoverPage({ params }: PageProps) {
 
   return (
     <main className="md:px-6 pb-8 space-y-6">
+      <Tracker />
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold capitalize">
           {level} {roleLabel} Projects

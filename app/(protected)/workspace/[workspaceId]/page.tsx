@@ -3,6 +3,7 @@ import { userRequired } from "@/app/data/user/is-user-authenticated";
 import React from "react";
 import { ScrollToProjectCard } from "@/components/explore/scroll-to-project-card";
 import { ReceiptPoundSterlingIcon } from "lucide-react";
+import Tracker from "@/components/Tracker";
 
 interface PageProps {
   params: Promise<{ workspaceId: string }>;
@@ -14,6 +15,7 @@ export default async function WorkspaceHome({ params }: PageProps) {
 
   return (
     <div className="min-h-screen">
+      <Tracker />
       {/* Hero Section */}
 <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 lg:py-32 relative overflow-hidden">
         {/* Subtle Background Pattern */}

@@ -1,5 +1,6 @@
 // app/(public)/subscription-policies/page.tsx
 
+import Tracker from "@/components/Tracker";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function SubscriptionPoliciesPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-12 space-y-10">
+      <Tracker />
       <section>
         <h1 className="text-4xl font-bold text-foreground mb-4">
           Subscription Policies

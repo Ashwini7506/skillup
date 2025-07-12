@@ -11,6 +11,7 @@ import ViewCollaborators from '@/components/members/view-collaborators';
 import Chat from '@/components/members/chat';
 import RequestsPane from '@/components/members/requests-pane';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import Tracker from '@/components/Tracker';
 
 interface Member {
   id: string;
@@ -291,6 +292,7 @@ export default function MembersPage({ params }: MembersPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <Tracker />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
         <p className="text-gray-600">

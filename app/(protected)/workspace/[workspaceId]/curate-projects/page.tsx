@@ -1,5 +1,6 @@
 import { userRequired } from "@/app/data/user/is-user-authenticated";
 import { CurateProjectForm } from "@/components/curateprojects/curate-projects-form";
+import Tracker from "@/components/Tracker";
 import { Rocket } from "lucide-react";
 
 interface PageProps {
@@ -12,6 +13,7 @@ export default async function CuratedProjectsPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-6xl space-y-16 px-8 py-24 bg-gradient-to-b from-gray-50 to-white">
+      <Tracker />
       <header className="relative">
         <div className="flex items-center justify-center mb-8">
           <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-slate-600 to-gray-700 shadow-lg hover:scale-105 transition-transform duration-300">

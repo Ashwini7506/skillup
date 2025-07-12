@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { MessageCircle, Users, Search, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useWorkspaceId } from '@/hooks/use-workspace-id';
+import Tracker from '../Tracker';
 
 export interface Collaborator {
   id: string;
@@ -52,7 +53,9 @@ export default function ViewCollaborators({
     const workspaceId = useWorkspaceId();
 
   return (
+    
     <Card className="h-full">
+      <Tracker />
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Users className="w-5 h-5" />

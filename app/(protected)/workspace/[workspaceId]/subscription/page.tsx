@@ -12,6 +12,7 @@ import { PricingCards } from '@/components/subscription/pricing-cards';
 import { format } from 'date-fns';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 import { SubscriptionActions } from '@/components/subscription/subscription-actions';
+import Tracker from '@/components/Tracker';
 
 interface Subscription {
   id: string;
@@ -124,6 +125,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Tracker />
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Subscription</h1>
         <p className="text-gray-600">Manage your subscription and billing</p>

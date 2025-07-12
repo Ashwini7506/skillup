@@ -1,6 +1,7 @@
 import { userRequired } from '@/app/data/user/is-user-authenticated'
 import { getUserWorkspaces } from '@/app/data/workspace/get-user-workspace'
 import { Onboardingform } from '@/components/onboarding-form'
+import Tracker from '@/components/Tracker'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
@@ -19,6 +20,7 @@ const {user} = await userRequired()
       <Onboardingform
       name = {name} email = {user?.email as string} image = {user?.picture || ""}
       />
+      <Tracker />
     </div>
   )
 }

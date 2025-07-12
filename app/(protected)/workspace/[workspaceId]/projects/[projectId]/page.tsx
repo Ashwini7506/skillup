@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React from 'react'
 import { Projectkanban } from '@/components/project/project-kanban';
 import { getProjectDetails } from '@/app/data/project/get-project-details';
+import Tracker from '@/components/Tracker';
 
 interface ProjectPageProps{
   params : Promise<{workspaceId : string; projectId:string}>;
@@ -21,6 +22,7 @@ const ProjectPage = async(props:ProjectPageProps) => {
   
   return (
     <div className='flex flex-col gap-6 pb-3 px-3'>
+      <Tracker />
       <Tabs defaultValue = {(searchParams.view as string) || "dashboard"}
       className = "w-full">
         <TabsList className='mb-4'>

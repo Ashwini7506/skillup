@@ -1,13 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-// import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Clock, Star, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+
+// Add this line to declare Razorpay on window
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 interface PricingPlan {
   id: 'FREE' | 'PRO' | 'ENTERPRISE';
@@ -77,38 +83,119 @@ interface PricingCardsProps {
   onUpgradeAction: () => void;
 }
 
+// Special user ID that bypasses payment
+const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
+
 export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps) {
   const { user } = useKindeBrowserClient();
   const [upgrading, setUpgrading] = useState<string | null>(null);
 
   const handleUpgrade = async (planId: 'PRO' | 'ENTERPRISE') => {
     if (!user?.id) return;
+
+    // Special handling for SkillUp Team owner - bypass payment
+    if (user.id === SKILLUP_TEAM_USER_ID) {
+      const confirmUpgrade = window.confirm(`Proceed with upgrade to ${planId} plan? (Owner bypass)`);
+      if (!confirmUpgrade) return;
+
+      setUpgrading(planId);
+      try {
+        const response = await fetch('/api/subscription/upgrade', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            plan: planId
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to upgrade subscription');
+        }
+
+        toast.success(`Successfully upgraded to ${planId} plan!`);
+        onUpgradeAction();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Failed to upgrade subscription');
+      } finally {
+        setUpgrading(null);
+      }
+      return;
+    }
+
+    // Regular payment flow for all other users
     const confirmUpgrade = window.confirm(`Proceed with payment and upgrade to ${planId} plan?`);
-  if (!confirmUpgrade) return;
+    if (!confirmUpgrade) return;
 
     setUpgrading(planId);
     try {
-      const response = await fetch('/api/subscription/upgrade', {
+      const amount = planId === 'PRO' ? 50 : 120;
+
+      // Create Razorpay order
+      const res = await fetch('/api/payments/create-order', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          plan: planId
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, plan: planId, amount }),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to upgrade subscription');
-      }
+      const data = await res.json();
+      if (!data.id) throw new Error('Failed to create Razorpay order');
 
-      toast.success(`Successfully upgraded to ${planId} plan!`);
-      onUpgradeAction();
+      // Initialize Razorpay payment
+      const razorpay = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Make sure this is NEXT_PUBLIC_
+        name: 'SkillUp',
+        description: `${planId} Plan Subscription`,
+        order_id: data.id,
+        currency: 'INR',
+        amount: amount * 100,
+        handler: async (response: any) => {
+          try {
+            // Verify payment
+            const verify = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                userId: user.id,
+                plan: planId,
+              }),
+            });
+
+            const result = await verify.json();
+            if (result.success) {
+              toast.success('Payment successful. Subscription upgraded!');
+              onUpgradeAction();
+            } else {
+              toast.error('Payment verification failed');
+            }
+          } catch (error) {
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: user.given_name || user.family_name || 'SkillUp User',
+          email: user.email,
+        },
+        theme: {
+          color: '#2563eb',
+        },
+        modal: {
+          ondismiss: () => {
+            setUpgrading(null);
+          }
+        }
+      });
+
+      razorpay.open();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to upgrade subscription');
-    } finally {
+      console.error('[UPGRADE_ERROR]', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to initiate payment');
       setUpgrading(null);
     }
   };
@@ -203,7 +290,7 @@ export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps
                 {upgrading === plan.id ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Upgrading...
+                    {user?.id === SKILLUP_TEAM_USER_ID ? 'Upgrading...' : 'Processing Payment...'}
                   </div>
                 ) : isCurrent ? (
                   'Current Plan'

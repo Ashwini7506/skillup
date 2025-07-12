@@ -8,6 +8,7 @@ import { RatingDialog } from '@/components/portfolio/RatingDialog';
 import { calculateDecisionMaker, calculateStrategicThinker, calculateTeamMaker, formatDate, getDifficultyColor } from '@/lib/utils';
 import { UserPortfolio } from '@/utils/types';
 import { db } from '@/lib/db';
+import Tracker from '@/components/Tracker';
 
 interface PageProps {
   params: Promise<{
@@ -54,7 +55,7 @@ function getUserMetadata(activities: any[]) {
 }
 
 export default async function Portfolio({ params }: PageProps) {
-  const {userId} = await params
+  const {userId} = await params;
   const user = await getUserPortfolio(userId);
 
   if (!user) {
@@ -99,6 +100,7 @@ export default async function Portfolio({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      <Tracker />
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-b border-gray-200">
         <div className="container mx-auto px-4 py-16">

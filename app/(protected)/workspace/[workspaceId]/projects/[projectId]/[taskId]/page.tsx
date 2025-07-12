@@ -2,6 +2,7 @@ import { getTaskById } from '@/app/data/task/get-task-by-id';
 import { userRequired } from '@/app/data/user/is-user-authenticated';
 import { TaskComment } from '@/components/task/task-comment';
 import { TaskDetails } from '@/components/task/task-details';
+import Tracker from '@/components/Tracker';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/db';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -42,6 +43,7 @@ const TaskIdpage = async ({ params }: PageProps) => {
 
   return (<>
     <div className="flex justify-between items-center mb-6 px-2">
+      <Tracker />
       {/* Left aligned: Go Back */}
       <Link href={`/workspace/${workspaceId}/projects/${projectId}`}>
         <Button

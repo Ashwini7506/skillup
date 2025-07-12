@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, CreditCard, Plus, X, Upload, Crown, Github, Linkedin, FileText, Link, Save, Loader2 } from 'lucide-react';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import Tracker from '@/components/Tracker';
 
 interface UserSettings {
   id: string;
@@ -252,6 +253,7 @@ const saveProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Tracker />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
