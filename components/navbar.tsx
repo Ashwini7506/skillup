@@ -269,7 +269,6 @@ export const Navbar = ({ id, email, name, image }: Props) => {
             <NotificationDropdown />
           )}
 
-          <ThemeToggle />
 
           <Popover>
             <PopoverTrigger asChild>
