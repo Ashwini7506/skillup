@@ -146,7 +146,7 @@ export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps
 
       // Initialize Razorpay payment
       const razorpay = new window.Razorpay({
-        key: process.env.RAZORPAY_KEY_ID, // Make sure this is NEXT_PUBLIC_
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Make sure this is NEXT_PUBLIC_
         name: 'SkillUp',
         description: `${planId} Plan Subscription`,
         order_id: data.id,
