@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "sonner"
-import { ThemeProvider } from "@/components/theme-provider";
+
 import Head from "next/head";
 
 
@@ -37,14 +37,14 @@ export default function RootLayout({
           {/* ✅ Razorpay Script */}
           <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
-          <ThemeProvider
+
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
             {children}
-          </ThemeProvider>
+
 
           <Toaster richColors/>
         </body>
