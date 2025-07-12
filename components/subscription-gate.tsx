@@ -25,16 +25,37 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
     // wait until subscription data is loaded
     if (!subscription) return;
 
-    const isExpired =
-      subscription.status !== 'ACTIVE' ||
-      (subscription.currentPeriodEnd &&
-        new Date(subscription.currentPeriodEnd) < new Date());
+    // Check if subscription is expired
+    const isExpired = checkSubscriptionExpired(subscription);
 
     if (isExpired && !isAllowedPath) {
-      toast.warning('Your subscription has ended. Please upgrade to continue.');
+      const message = subscription.plan === 'FREE' 
+        ? 'Your free trial has ended. Please upgrade to continue.'
+        : 'Your subscription has ended. Please upgrade to continue.';
+      
+      toast.warning(message);
       router.replace(`/workspace/${workspaceId}/subscription`);
     }
   }, [loading, subscription, pathname, router, workspaceId]);
+
+  // Helper function to check if subscription is expired
+  const checkSubscriptionExpired = (subscription: any) => {
+    // If status is not ACTIVE, it's expired
+    if (subscription.status !== 'ACTIVE') {
+      return true;
+    }
+
+    // If currentPeriodEnd is null (like for SkillUp team), never expires
+    if (!subscription.currentPeriodEnd) {
+      return false;
+    }
+
+    // Check if current date is after the period end
+    const currentDate = new Date();
+    const periodEndDate = new Date(subscription.currentPeriodEnd);
+    
+    return currentDate > periodEndDate;
+  };
 
   // block rendering until decision is made
   if (loading || !subscription) {
@@ -45,11 +66,7 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
     );
   }
 
-  const isExpired =
-    subscription.status !== 'ACTIVE' ||
-    (subscription.currentPeriodEnd &&
-      new Date(subscription.currentPeriodEnd) < new Date());
-
+  const isExpired = checkSubscriptionExpired(subscription);
   const isAllowedPath = pathname.includes(`/workspace/${workspaceId}/subscription`);
 
   if (isExpired && !isAllowedPath) {
