@@ -60,7 +60,12 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
       return true; // Treat invalid dates as expired for safety
     }
     
-    return currentDate > periodEndDate;
+    const tomorrow = new Date(periodEndDate);
+tomorrow.setDate(tomorrow.getDate() + 1);
+tomorrow.setHours(0, 0, 0, 0);
+
+return currentDate >= tomorrow;
+
   };
 
   // block rendering until decision is made
