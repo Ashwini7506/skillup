@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script"; // Add this import
 import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "sonner"
 
@@ -35,7 +36,10 @@ export default function RootLayout({
         >
 
           {/* ✅ Razorpay Script */}
-          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+          <Script 
+            src="https://checkout.razorpay.com/v1/checkout.js" 
+            strategy="beforeInteractive"
+          />
     
             {children}
 
