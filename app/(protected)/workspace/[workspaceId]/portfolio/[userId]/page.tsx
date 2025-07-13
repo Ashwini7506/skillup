@@ -105,14 +105,16 @@ export default async function Portfolio({ params }: PageProps) {
       <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-b border-gray-200">
         <div className="container mx-auto px-4 py-16">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-xl">
-                <AvatarImage src={user.image || undefined} alt={user.name} />
-                <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                  {user.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-start gap-8 w-full">
+              <div className="flex-shrink-0 flex justify-center md:justify-start w-full md:w-auto">
+                <Avatar className="w-48 h-48 border-4 border-white shadow-xl">
+                  <AvatarImage src={user.image || undefined} alt={user.name} />
+                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+                    {user.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="flex-1 text-center md:text-left min-h-[192px] flex flex-col justify-center">
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">
                   {user.name}
                 </h1>
