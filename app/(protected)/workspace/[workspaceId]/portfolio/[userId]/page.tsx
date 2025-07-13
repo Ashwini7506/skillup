@@ -89,15 +89,6 @@ export default async function Portfolio({ params }: PageProps) {
   console.log('Social links:', socialLinks);
   console.log('About text:', aboutText);
 
-  // Temporary test data - remove this after debugging
-  // const testSocialLinks = {
-  //   linkedinUrl: socialLinks.linkedinUrl || 'https://linkedin.com/in/test',
-  //   githubUrl: socialLinks.githubUrl || 'https://github.com/test',
-  //   resumeUrl: socialLinks.resumeUrl || 'https://example.com/resume.pdf'
-  // };
-
-  // const testAboutText = aboutText || 'Passionate Product Manager with experience in building innovative solutions and leading cross-functional teams to deliver exceptional user experiences.';
-
   return (
     <div className="min-h-screen bg-white">
       <Tracker />
@@ -107,46 +98,59 @@ export default async function Portfolio({ params }: PageProps) {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex flex-col md:flex-row items-start gap-8 w-full">
               <div className="flex-shrink-0 flex justify-center md:justify-start w-full md:w-auto">
-                <Avatar className="w-60 h-60 border-4 border-white shadow-xl">
-                  <AvatarImage src={user.image || undefined} alt={user.name} />
-                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                    {user.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
+                {/* Enhanced Avatar Container */}
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <Avatar className="w-64 h-64 border-8 border-white shadow-2xl ring-4 ring-blue-500/20 transition-all duration-300 group-hover:scale-105">
+                      <AvatarImage 
+                        src={user.image || undefined} 
+                        alt={user.name}
+                        className="object-cover w-full h-full rounded-full"
+                      />
+                      <AvatarFallback className="text-5xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
+                        {user.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 text-center md:text-left min-h-[192px] flex flex-col justify-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              
+              <div className="flex-1 text-center md:text-left min-h-[256px] flex flex-col justify-center">
+                <h1 className="text-5xl font-bold text-gray-900 mb-3 tracking-tight">
                   {user.name}
                 </h1>
-                <p className="text-xl text-gray-600 mb-4">{user.job}</p>
+                <p className="text-2xl text-gray-600 mb-6 font-medium">{user.job}</p>
                 
                 {/* Bio/About section - moved here */}
                 {aboutText && (
-                  <p className="text-gray-700 leading-relaxed mb-4 max-w-2xl">
-                    {aboutText}
-                  </p>
+                  <div className="mb-6">
+                    <p className="text-gray-700 leading-relaxed text-lg max-w-2xl">
+                      {aboutText}
+                    </p>
+                  </div>
                 )}
                 
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-medium">
                     {user.role}
                   </Badge>
-                  <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                  <Badge variant="secondary" className="bg-gray-100 text-gray-700 px-4 py-2 text-sm font-medium">
                     <Users className="w-4 h-4 mr-1" />
                     {user.joinRequests.length} Collaborations
                   </Badge>
                 </div>
 
-                {/* Social Links */}
-                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                {/* Enhanced Social Links */}
+                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                   {socialLinks.linkedinUrl && (
                     <a
                       href={socialLinks.linkedinUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-blue-500/25 font-medium"
                     >
-                      <Linkedin className="w-4 h-4" />
+                      <Linkedin className="w-5 h-5" />
                       LinkedIn
                     </a>
                   )}
@@ -155,9 +159,9 @@ export default async function Portfolio({ params }: PageProps) {
                       href={socialLinks.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+                      className="inline-flex items-center gap-3 px-6 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-gray-500/25 font-medium"
                     >
-                      <Github className="w-4 h-4" />
+                      <Github className="w-5 h-5" />
                       GitHub
                     </a>
                   )}
@@ -166,9 +170,9 @@ export default async function Portfolio({ params }: PageProps) {
                       href={socialLinks.resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                      className="inline-flex items-center gap-3 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-indigo-500/25 font-medium"
                     >
-                      <FileText className="w-4 h-4" />
+                      <FileText className="w-5 h-5" />
                       Resume
                     </a>
                   )}
@@ -185,7 +189,7 @@ export default async function Portfolio({ params }: PageProps) {
           <div className="lg:col-span-2 space-y-6">
             {/* Experience Section */}
             {metadata.experience && (
-              <Card className="border-gray-200 shadow-sm">
+              <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900">
                     <Calendar className="w-5 h-5 text-blue-600" />
@@ -200,7 +204,7 @@ export default async function Portfolio({ params }: PageProps) {
 
             {/* Position of Responsibility */}
             {metadata.positionOfResponsibility && metadata.positionOfResponsibility.length > 0 && (
-              <Card className="border-gray-200 shadow-sm">
+              <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900">
                     <Trophy className="w-5 h-5 text-blue-600" />
@@ -221,7 +225,7 @@ export default async function Portfolio({ params }: PageProps) {
             )}
 
             {/* Project Showcase */}
-            <Card className="border-gray-200 shadow-sm">
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-gray-900">
                   <Lightbulb className="w-5 h-5 text-blue-600" />
@@ -235,7 +239,7 @@ export default async function Portfolio({ params }: PageProps) {
                     <h3 className="font-semibold text-lg mb-4 text-gray-900">Projects Curated</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {user.createdProjects.map((project) => (
-                        <div key={project.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white">
+                        <div key={project.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300 bg-white">
                           <h4 className="font-medium mb-2 text-gray-900">{project.name}</h4>
                           <p className="text-sm text-gray-600 mb-3">{project.description}</p>
                           <div className="flex items-center gap-2 mb-2">
@@ -261,7 +265,7 @@ export default async function Portfolio({ params }: PageProps) {
                       {user.joinRequests
                         .filter(request => request.project)
                         .map(request => (
-                          <div key={request.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white">
+                          <div key={request.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300 bg-white">
                             <h4 className="font-medium mb-2 text-gray-900">{request.project.name}</h4>
                             <p className="text-sm text-gray-600 mb-3">{request.project.description}</p>
                             <div className="flex items-center gap-2 mb-2">
@@ -292,7 +296,7 @@ export default async function Portfolio({ params }: PageProps) {
           {/* Right Column */}
           <div className="space-y-6">
             {/* Top Skills */}
-            <Card className="border-gray-200 shadow-sm">
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-gray-900">
                   <Star className="w-5 h-5 text-blue-600" />
@@ -322,14 +326,14 @@ export default async function Portfolio({ params }: PageProps) {
 
             {/* Hard Skills */}
             {metadata.hardSkills && metadata.hardSkills.length > 0 && (
-              <Card className="border-gray-200 shadow-sm">
+              <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
                 <CardHeader>
                   <CardTitle className="text-gray-900">Hard Skills</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {metadata.hardSkills.map((skill: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-700">
+                      <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-150">
                         {skill}
                       </Badge>
                     ))}
@@ -339,7 +343,7 @@ export default async function Portfolio({ params }: PageProps) {
             )}
 
             {/* Contact Info */}
-            <Card className="border-gray-200 shadow-sm">
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
                 <CardTitle className="text-gray-900">Contact</CardTitle>
               </CardHeader>
@@ -347,7 +351,7 @@ export default async function Portfolio({ params }: PageProps) {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700">Email:</span>
-                    <a href={`mailto:${user.email}`} className="text-sm text-blue-600 hover:text-blue-700">
+                    <a href={`mailto:${user.email}`} className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
                       {user.email}
                     </a>
                   </div>
@@ -364,7 +368,7 @@ export default async function Portfolio({ params }: PageProps) {
                           href={socialLinks.linkedinUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 transition-colors duration-150"
                         >
                           <Linkedin className="w-4 h-4" />
                           LinkedIn Profile
@@ -376,7 +380,7 @@ export default async function Portfolio({ params }: PageProps) {
                           href={socialLinks.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
+                          className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors duration-150"
                         >
                           <Github className="w-4 h-4" />
                           GitHub Profile
@@ -388,7 +392,7 @@ export default async function Portfolio({ params }: PageProps) {
                           href={socialLinks.resumeUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700"
+                          className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 transition-colors duration-150"
                         >
                           <FileText className="w-4 h-4" />
                           View Resume
