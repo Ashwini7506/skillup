@@ -45,6 +45,7 @@ import { taskStats } from "@/utils";
 import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
 import { updateTask } from "@/app/actions/task";
+import { FileUpload } from "../file-upload";
 
 interface Props {
     project: ProjectProps;
@@ -332,7 +333,21 @@ export const EditTaskDialog = ({ task,project }: Props) => {
                                 </FormItem>
                             )}
                         />
-
+<FormField
+                            control={form.control}
+                            name="attachments"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Attachments</FormLabel>
+                                    <FormControl>
+                                        <FileUpload
+                                        value = {field.value || []}
+                                        onChange ={field.onChange}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
                         <div className="flex justify-end">
                             <Button type="submit" disabled={pending}>
                                 {pending ? "Creating..." : "Edit Task"}
