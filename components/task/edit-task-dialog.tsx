@@ -64,15 +64,15 @@ export const EditTaskDialog = ({ task,project }: Props) => {
 
     const form = useForm<TaskFormValues>({
         resolver: zodResolver(taskFormSchema),
-        defaultValues: {
-            title: task?.title||"",
-            description: task?.status||"",
-            status: "TODO",
-            dueDate: task.dueDate ||new Date(),
-            startDate: task.startDate||new Date(),
-            priority: task.priority||"MEDIUM",
-            attachments: [],
-            assigneeId: task.assigneeId||"",
+       defaultValues: {
+            title: task?.title || "",
+            description: task?.description || "",     // Fixed
+            status: task?.status || "TODO",          // Fixed
+            dueDate: task.dueDate || new Date(),
+            startDate: task.startDate || new Date(),
+            priority: task.priority || "MEDIUM",
+            attachments: [],    // Fixed
+            assigneeId: task.assigneeId || "",
         },
     });
 
