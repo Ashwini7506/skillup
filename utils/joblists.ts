@@ -2,6 +2,7 @@
 
 const joblists = [
   "Product Manager",
+  "Electronics Engineer",
   "Project Manager",
   "Software Developer",
   "Business Developer",
