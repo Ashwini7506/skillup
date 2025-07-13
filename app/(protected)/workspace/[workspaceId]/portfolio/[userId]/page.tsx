@@ -107,7 +107,7 @@ export default async function Portfolio({ params }: PageProps) {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex flex-col md:flex-row items-start gap-8 w-full">
               <div className="flex-shrink-0 flex justify-center md:justify-start w-full md:w-auto">
-                <Avatar className="w-48 h-48 border-4 border-white shadow-xl">
+                <Avatar className="w-60 h-60 border-4 border-white shadow-xl">
                   <AvatarImage src={user.image || undefined} alt={user.name} />
                   <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
                     {user.name.split(' ').map(n => n[0]).join('')}
