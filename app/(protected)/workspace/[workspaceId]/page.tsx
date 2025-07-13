@@ -201,7 +201,7 @@ export default async function WorkspaceHome({ params }: PageProps) {
 
             {/* Explore Members Card */}
             <a 
-              href=`/workspace/${workspaceId}/members`
+              href={`/workspace/${workspaceId}/members`}
               className="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-8 transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 block h-full relative overflow-hidden"
             >
               <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8"></div>
