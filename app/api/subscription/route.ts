@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 // Configuration for skillup team
-const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
+const SKILLUP_TEAM_USER_ID = ["kp_bef756ed32e24ad99d5d9fa035832eb5", "kp_b571933f34f64bd5b2d1894bfa096e98", "kp_7df84857bdeb4d48b6120a06d093c45f" ];
 
 // Utility function to add days to a date
 const addDays = (date: Date, days: number) => {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    if (userId === SKILLUP_TEAM_USER_ID) {
+    if (SKILLUP_TEAM_USER_ID.includes(userId)) {
       // console.log('[SUBSCRIPTION][GET] Returning SkillUp Team subscription bypass');
       return NextResponse.json(createSkillUpTeamSubscription());
     }
@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'User ID and action required' }, { status: 400 });
     }
 
-    if (userId === SKILLUP_TEAM_USER_ID) {
+    if (SKILLUP_TEAM_USER_ID.includes(userId)) {
       console.warn('[SUBSCRIPTION][PUT] BLOCKED: SkillUp Team cannot cancel/reactivate');
       return NextResponse.json({ error: 'Cannot modify SkillUp Team subscription' }, { status: 403 });
     }
