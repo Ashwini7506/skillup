@@ -63,7 +63,7 @@ export const InviteMemberForm = ({ projectId }: InviteMemberFormProps) => {
       </CardHeader>
       <CardContent>
         <form id="invite-form" action={handleSubmit} className="space-y-4">
-          <input type="hidden" name="projectId" value={projectId} />
+          <Input type="hidden" name="projectId" value={projectId} />
           
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>

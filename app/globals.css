@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "uploadthing/tw/v4";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -139,4 +140,65 @@
   100% {
     transform: rotate(0deg);
   }
+}
+
+
+/* TipTap Rich Text Editor Styles */
+.ProseMirror {
+  outline: none !important;
+  line-height: 1.6 !important;
+}
+
+.ProseMirror p {
+  margin: 0.5em 0 !important;
+}
+
+.ProseMirror h1 {
+  font-size: 1.5em !important;
+  font-weight: 600 !important;
+  margin: 1em 0 0.5em 0 !important;
+}
+
+.ProseMirror h2 {
+  font-size: 1.25em !important;
+  font-weight: 600 !important;
+  margin: 1em 0 0.5em 0 !important;
+}
+
+.ProseMirror h3 {
+  font-size: 1.125em !important;
+  font-weight: 600 !important;
+  margin: 1em 0 0.5em 0 !important;
+}
+
+.ProseMirror ul {
+  list-style-type: disc !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.ProseMirror li {
+  margin: 0.25em 0 !important;
+}
+
+.ProseMirror strong {
+  font-weight: 600 !important;
+}
+
+.ProseMirror em {
+  font-style: italic !important;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
 }

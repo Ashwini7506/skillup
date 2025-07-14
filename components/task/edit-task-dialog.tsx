@@ -45,17 +45,18 @@ import { taskStats } from "@/utils";
 import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
 import { updateTask } from "@/app/actions/task";
+import { FileUpload } from "../file-upload";
 
 interface Props {
     project: ProjectProps;
     task: Task & {
-        assignedTo : User;
+        assignedTo: User;
     }
 }
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
 
-export const EditTaskDialog = ({ task,project }: Props) => {
+export const EditTaskDialog = ({ task, project }: Props) => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const workspaceId = useWorkspaceId();
@@ -64,18 +65,18 @@ export const EditTaskDialog = ({ task,project }: Props) => {
     const form = useForm<TaskFormValues>({
         resolver: zodResolver(taskFormSchema),
         defaultValues: {
-            title: task?.title||"",
-            description: task?.status||"",
-            status: "TODO",
-            dueDate: task.dueDate ||new Date(),
-            startDate: task.startDate||new Date(),
-            priority: task.priority||"MEDIUM",
-            attachments: [],
-            assigneeId: task.assigneeId||"",
+            title: task?.title || "",
+            description: task?.description || "",     // Fixed
+            status: task?.status || "TODO",          // Fixed
+            dueDate: task.dueDate || new Date(),
+            startDate: task.startDate || new Date(),
+            priority: task.priority || "MEDIUM",
+            attachments: [],    // Fixed
+            assigneeId: task.assigneeId || "",
         },
     });
 
-    const handleOnSubmit = async (data: TaskFormValues) => { 
+    const handleOnSubmit = async (data: TaskFormValues) => {
         try {
             setPending(true);
 
@@ -87,15 +88,15 @@ export const EditTaskDialog = ({ task,project }: Props) => {
         } catch (error) {
             console.log(error);
             toast.error("Failed to update task. Please try again")
-        }finally{
+        } finally {
             setPending(false);
         }
-     };
+    };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={"outline"}><Pencil/>Edit task</Button>
+                <Button variant={"outline"}><Pencil />Edit task</Button>
             </DialogTrigger>
 
             <DialogContent>
@@ -332,7 +333,21 @@ export const EditTaskDialog = ({ task,project }: Props) => {
                                 </FormItem>
                             )}
                         />
-
+                        <FormField
+                            control={form.control}
+                            name="attachments"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Attachments</FormLabel>
+                                    <FormControl>
+                                        <FileUpload
+                                            value={field.value || []}
+                                            onChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
                         <div className="flex justify-end">
                             <Button type="submit" disabled={pending}>
                                 {pending ? "Creating..." : "Edit Task"}

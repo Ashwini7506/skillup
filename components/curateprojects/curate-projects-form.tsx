@@ -10,8 +10,9 @@ import joblists from "@/utils/joblists";
 import { createCuratedProject } from "@/app/actions/curateprojects/create-curated-project";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+// import { TipTapEditor } from "./tiptap";
 import { Eye, EyeOff, Plus, X, Sparkles, Target, Users, Zap, ChevronDown, Trash2 } from "lucide-react";
+import { TipTapEditor } from "../ui/rich-text-editor";
 
 const schema = z.object({
   name: z.string().min(3, "Project name is required"),
@@ -51,6 +52,7 @@ export function CurateProjectForm({ workspaceId }: { workspaceId: string }) {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -151,7 +153,7 @@ export function CurateProjectForm({ workspaceId }: { workspaceId: string }) {
                     <div className="w-2 h-8 bg-gradient-to-b from-slate-600 to-gray-700 rounded-full"></div>
                     Project Details
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-6">
                     <div className="space-y-4">
                       <label className="block text-sm font-medium text-gray-700">Project Name</label>
                       <Input {...register("name")} placeholder="Enter your project name..." className="w-full" />
@@ -164,10 +166,9 @@ export function CurateProjectForm({ workspaceId }: { workspaceId: string }) {
                     </div>
                     <div className="space-y-4">
                       <label className="block text-sm font-medium text-gray-700">Vision / Description</label>
-                      <Textarea
-                        {...register("description")}
+                      <TipTapEditor
                         placeholder="Describe your project vision and goals..."
-                        rows={4}
+                        onChange={(content) => setValue("description", content)}
                         className="w-full"
                       />
                     </div>
@@ -357,10 +358,9 @@ export function CurateProjectForm({ workspaceId }: { workspaceId: string }) {
                           </div>
                           <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Description</label>
-                            <Textarea
-                              {...register(`tasks.${idx}.description` as const)}
+                            <TipTapEditor
                               placeholder="Describe this task..."
-                              rows={3}
+                              onChange={(content) => setValue(`tasks.${idx}.description`, content)}
                               className="w-full"
                             />
                           </div>

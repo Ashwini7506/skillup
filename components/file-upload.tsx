@@ -11,9 +11,10 @@ import { X } from "lucide-react";
 interface FileUploadProps{
     onChange : (value : {name:string, url:string, type:$Enums.FileType}[])=>void;
     value : {name:string, url:string, type:$Enums.FileType}[];
+    taskId?: string; // Add taskId prop
 }
 
-export const FileUpload = ({value,onChange}:FileUploadProps) => {
+export const FileUpload = ({value,onChange, taskId}:FileUploadProps) => {
     const [seletedType, setSelectedType] = useState<$Enums.FileType|undefined>(
         undefined
     )
@@ -33,7 +34,7 @@ export const FileUpload = ({value,onChange}:FileUploadProps) => {
                     onClick={()=>
                         onChange(value.filter((f) => f.url !== file.url))
                     }
-                    className="absolute-top-2 -right-2 p-1 bg-rose-500 rounded-full text-white"
+                    className="absolute -top-2 -right-2 p-1 bg-rose-500 rounded-full text-white"
                     >
                         <X className="h-4 w-4"/>
                     </button>
@@ -44,6 +45,7 @@ export const FileUpload = ({value,onChange}:FileUploadProps) => {
         seletedType ? (
             <UploadDropzone
             endpoint={seletedType === "IMAGE"?"imageUploader":"documentUploader"}
+            headers={taskId ? { 'x-task-id': taskId } : undefined} // Pass taskId via headers
             onClientUploadComplete={res=>{
                 const newFiles = res?.map((f) => ({
                     name:f.name,

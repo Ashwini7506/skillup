@@ -16,9 +16,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  eslint: {
-ignoreDuringBuilds: true,
-},
+  
+  // transpilePackages: ['@tiptap/core', '@tiptap/react', '@tiptap/starter-kit']
+
+  
 };
 
 export default nextConfig;

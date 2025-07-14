@@ -55,7 +55,14 @@ export const TaskDetails = ({ task }: TaskProps) => {
         <CardContent className="p-6 space-y-6">
             <div className="space-y-2">
                 <h4 className="text-lg font-semibold text-muted-foreground">Description</h4>
-                <p className="text-muted-foreground">{task.description || "No description"}</p>
+                {task.description ? (
+                    <div 
+                        className="text-muted-foreground prose prose-sm max-w-none [&>*]:my-1 [&>h1]:text-lg [&>h2]:text-base [&>h3]:text-sm [&>strong]:font-semibold [&>em]:italic [&>ul]:list-disc [&>ol]:list-decimal [&>li]:ml-4"
+                        dangerouslySetInnerHTML={{ __html: task.description }}
+                    />
+                ) : (
+                    <p className="text-muted-foreground">No description</p>
+                )}
             </div>
             <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-muted-foreground">Additional Details</h4>

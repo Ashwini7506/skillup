@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { PrismaClient } from '@prisma/client';
 import { db } from '@/lib/db';
-
-// const prisma = new PrismaClient();
 
 export async function PUT(request: NextRequest) {
   try {
@@ -25,6 +22,12 @@ export async function PUT(request: NextRequest) {
     if (updates.githubUrl) userUpdateData.githubUrl = updates.githubUrl;
     if (updates.resumeUrl) userUpdateData.resumeUrl = updates.resumeUrl;
 
+    // Handle experience as a string (not array)
+    if (updates.experience !== undefined) {
+      userUpdateData.experience = updates.experience;
+    }
+    
+
     // Array fields
     if (Array.isArray(updates.positionOfResponsibility)) {
       userUpdateData.positionOfResponsibility = updates.positionOfResponsibility.filter(Boolean);
@@ -33,10 +36,7 @@ export async function PUT(request: NextRequest) {
       userUpdateData.hardSkills = updates.hardSkills.filter(Boolean);
     }
 
-    // Optional text field
-    if (Array.isArray(updates.experience)) {
-  userUpdateData.experience = updates.experience.filter(Boolean);
-}
+    console.log('[API] Updating user with data:', userUpdateData);
 
     await db.user.update({
       where: { id: userId },

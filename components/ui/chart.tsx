@@ -152,6 +152,16 @@ const ChartTooltipContent = React.forwardRef<
   ) => {
     const { config } = useChart()
 
+    // Filter out any non-DOM props that might be passed from Recharts
+    const domProps = Object.fromEntries(
+      Object.entries(props).filter(([key]) => 
+        // Allow standard HTML attributes and data-* attributes
+        key.startsWith('data-') || 
+        key.startsWith('aria-') || 
+        ['id', 'role', 'tabIndex', 'style', 'onClick', 'onMouseOver', 'onMouseOut'].includes(key)
+      )
+    )
+
     const tooltipLabel = React.useMemo(() => {
       if (hideLabel || !payload?.length) {
         return null
@@ -201,7 +211,7 @@ const ChartTooltipContent = React.forwardRef<
           "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
           className
         )}
-        {...props}
+        {...domProps}  // ← Now only spreading DOM-safe props
       >
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">

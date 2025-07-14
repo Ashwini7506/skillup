@@ -205,7 +205,6 @@ export const columns: ColumnDef<TaskTableItem>[] = [
               taskId={taskId}
               projectId={project.id}
               workspaceId={project.workspaceId}
-              // accessLevel={project.accessLevel}
             />
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
-const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
+const SKILLUP_TEAM_USER_ID = [
+  "kp_bef756ed32e24ad99d5d9fa035832eb5",
+  "kp_b571933f34f64bd5b2d1894bfa096e98"
+];
 
 // Utility function to add days to a date
 const addDays = (date: Date, days: number) => {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
-   result.setHours(23, 59, 59, 999)
+  result.setHours(23, 59, 59, 999);
   return result;
 };
 
@@ -19,8 +22,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID and plan required' }, { status: 400 });
     }
 
-    // Prevent upgrades for SkillUp Team account
-    if (userId === SKILLUP_TEAM_USER_ID) {
+    // Prevent upgrades for SkillUp Team accounts
+    if (SKILLUP_TEAM_USER_ID.includes(userId)) {
       return NextResponse.json({ error: 'Cannot modify SkillUp Team subscription' }, { status: 403 });
     }
 

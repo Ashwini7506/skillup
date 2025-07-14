@@ -54,24 +54,27 @@ export const Onboardingform = ({ name, email, image }: Props) => {
             email: email,
             image: image || "",
             role: "",
+            job: "", // Add this line to fix the controlled/uncontrolled error
             // industryType: "",
         }
     });
 
     const onSubmit = async (data: UserDataType) => {
-        try{
+        try {
             setPending(true);
             await createUser(data);
             toast.success("Keep browser scale close to 80% for best experience")
-        }catch(error){
+        } catch (error) {
             console.log(error)
             toast.error("Please make a growthspace account to continue")
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4">
-            <Card className="w-full max-w-md shadow-xl rounded-2xl">
+        <div className="min-h-screen bg-background px-4 flex items-center justify-center">
+            <div className="w-full max-w-md">
+                <h1 className="text-4xl font-bold text-center mb-8">Step 1/2</h1>
+                <Card className="w-full shadow-xl rounded-2xl">
                 <CardHeader>
                     <CardTitle className="text-2xl">Welcome to SkillUp</CardTitle>
                     <CardDescription>
@@ -104,20 +107,9 @@ export const Onboardingform = ({ name, email, image }: Props) => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Job Intended</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Job" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {joblists.map((job) => (
-                                                            <SelectItem key={job} value={job}>
-                                                                {job}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <FormControl>
+                                                    <Input placeholder="Enter job title" {...field} />
+                                                </FormControl>
                                             </FormItem>
                                         )}
                                     />
@@ -146,44 +138,36 @@ export const Onboardingform = ({ name, email, image }: Props) => {
                                                 </Select>
                                             </FormItem>
                                         )}
-                                    />                                    
+                                    />
                                 </div>
                             </div>
 
                             <FormField
-                                        control={form.control}
-                                        name="about"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Bio</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <Textarea
-                                                        {...field}
-                                                             placeholder="Let the world know who you are" className='resize-none'>
-                                                             </Textarea>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {rolelists.map((role) => (
-                                                            <SelectItem key={role} value={role}>
-                                                                {role}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormItem>
-                                        )}
-                                    />
-
+                                control={form.control}
+                                name="about"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Bio</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                {...field}
+                                                placeholder="Let the world know who you are" 
+                                                className='resize-none'
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
 
                             {/* Submit */}
-                            <Button type="submit" disabled = {pending} className="w-full">
+                            <Button type="submit" disabled={pending} className="w-full">
                                 Submit
                             </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 };

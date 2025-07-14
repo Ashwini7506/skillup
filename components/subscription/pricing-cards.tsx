@@ -84,7 +84,10 @@ interface PricingCardsProps {
 }
 
 // Special user ID that bypasses payment
-const SKILLUP_TEAM_USER_ID = "kp_bef756ed32e24ad99d5d9fa035832eb5";
+const SKILLUP_TEAM_USER_ID = [
+  "kp_bef756ed32e24ad99d5d9fa035832eb5",
+  "kp_b571933f34f64bd5b2d1894bfa096e98"
+];
 
 export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps) {
   const { user } = useKindeBrowserClient();
@@ -94,7 +97,7 @@ export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps
     if (!user?.id) return;
 
     // Special handling for SkillUp Team owner - bypass payment
-    if (user.id === SKILLUP_TEAM_USER_ID) {
+    if (SKILLUP_TEAM_USER_ID.includes(user.id)) {
       const confirmUpgrade = window.confirm(`Proceed with upgrade to ${planId} plan? (Owner bypass)`);
       if (!confirmUpgrade) return;
 
@@ -290,7 +293,7 @@ export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps
                 {upgrading === plan.id ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    {user?.id === SKILLUP_TEAM_USER_ID ? 'Upgrading...' : 'Processing Payment...'}
+                    {SKILLUP_TEAM_USER_ID.includes(user?.id as string) ? 'Upgrading...' : 'Processing Payment...'}
                   </div>
                 ) : isCurrent ? (
                   'Current Plan'
