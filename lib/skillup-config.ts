@@ -1,7 +1,7 @@
 // Configuration for skillup team
 // Replace this with the actual user ID of the skillup team account
 export const SKILLUP_TEAM_USER_ID = ["kp_bef756ed32e24ad99d5d9fa035832eb5",
-  "kp_7df84857bdeb4d48b6120a06d093c45f"
+  "kp_b571933f34f64bd5b2d1894bfa096e98"
 ]
 
 // You can also add other team-related configurations here
