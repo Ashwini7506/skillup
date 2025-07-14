@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 // Configuration for skillup team
-const SKILLUP_TEAM_USER_ID = ["kp_bef756ed32e24ad99d5d9fa035832eb5", "kp_b571933f34f64bd5b2d1894bfa096e98", "kp_7df84857bdeb4d48b6120a06d093c45f" ];
+const SKILLUP_TEAM_USER_ID = ["kp_bef756ed32e24ad99d5d9fa035832eb5",
+                              "kp_b571933f34f64bd5b2d1894bfa096e98", 
+                             ];
 
 // Utility function to add days to a date
 const addDays = (date: Date, days: number) => {
