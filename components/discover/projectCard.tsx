@@ -54,7 +54,7 @@ export function ProjectCard({
     });
   };
 
-  const isSkillupTeamProject = project.createdById === SKILLUP_TEAM_USER_ID;
+  const isSkillupTeamProject = project.createdById ? SKILLUP_TEAM_USER_ID.includes(project.createdById) : false;
 
   return (
     <Card
