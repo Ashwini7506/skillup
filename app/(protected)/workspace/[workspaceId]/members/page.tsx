@@ -291,89 +291,65 @@ export default function MembersPage({ params }: MembersPageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <Tracker />
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
-        <p className="text-gray-600">
-          Discover, connect, and collaborate with team members
-        </p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <Tracker />
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
+          <p className="text-gray-600">
+            Discover, connect, and collaborate with team members
+          </p>
+        </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="discover" className="flex items-center space-x-2">
-            <Search className="w-4 h-4" />
-            <span>Discover</span>
-          </TabsTrigger>
-          <TabsTrigger value="collaborators" className="flex items-center space-x-2">
-            <Users className="w-4 h-4" />
-            <span>Collaborators</span>
-          </TabsTrigger>
-          <TabsTrigger value="messages" className="flex items-center space-x-2">
-            <MessageCircle className="w-4 h-4" />
-            <span>Messages</span>
-          </TabsTrigger>
-          <TabsTrigger value="requests" className="flex items-center space-x-2">
-            <Inbox className="w-4 h-4" />
-            <span>Requests</span>
-            {(requests.incoming.length + requests.outgoing.length) > 0 && (
-              <span className="ml-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {requests.incoming.length + requests.outgoing.length}
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1">
+            <TabsTrigger value="discover" className="flex items-center space-x-2 text-xs md:text-sm py-2 px-3">
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="collaborators" className="flex items-center space-x-2 text-xs md:text-sm py-2 px-3">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Collaborators</span>
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center space-x-2 text-xs md:text-sm py-2 px-3">
+              <MessageCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Messages</span>
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center space-x-2 text-xs md:text-sm py-2 px-3">
+              <Inbox className="w-4 h-4" />
+              <span className="hidden sm:inline">Requests</span>
+              {(requests.incoming.length + requests.outgoing.length) > 0 && (
+                <span className="ml-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {requests.incoming.length + requests.outgoing.length}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="discover" className="space-y-6">
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <MembersSearch
-                onSearchAction={handleSearchAction}
-                onClearFiltersAction={handleClearFiltersAction}
-                loading={loading}
-              />
-            </div>
-            
-            <div className="lg:col-span-2">
-              <Card>
-                <CardContent className="p-6">
-                  {members.length > 0 ? (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Search Results ({members.length})
-                      </h3>
-                      <div className="grid gap-4">
-                        {members.map((member) => (
-                          <MemberCard
-                            key={member.id}
-                            member={member}
-                            onSendRequest={handleSendRequest}
-                            onMessage={handleMessageUserAction}
-                            onViewProfile={handleViewProfileAction}
-                            loading={loading}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Suggested Members ({suggestions.length})
-                      </h3>
-                      {suggestions.length === 0 ? (
-                        <div className="text-center py-8">
-                          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                            <UserPlus className="w-8 h-8 text-gray-400" />
-                          </div>
-                          <p className="text-gray-500">No suggestions available</p>
-                          <p className="text-sm text-gray-400">
-                            Use the search filters to find members
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="grid gap-4">
-                          {suggestions.map((member) => (
+          <TabsContent value="discover" className="space-y-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Search Panel */}
+              <div className="w-full lg:w-80 lg:flex-shrink-0">
+                <div className="sticky top-6">
+                  <MembersSearch
+                    onSearchAction={handleSearchAction}
+                    onClearFiltersAction={handleClearFiltersAction}
+                    loading={loading}
+                  />
+                </div>
+              </div>
+              
+              {/* Results Panel */}
+              <div className="flex-1 min-w-0">
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    {members.length > 0 ? (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">
+                          Search Results ({members.length})
+                        </h3>
+                        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                          {members.map((member) => (
                             <MemberCard
                               key={member.id}
                               member={member}
@@ -384,52 +360,82 @@ export default function MembersPage({ params }: MembersPageProps) {
                             />
                           ))}
                         </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="collaborators">
-          <ViewCollaborators
-            collaborators={collaborators}
-            onMessageAction={handleMessageUserAction}
-            onViewProfileAction={handleViewProfileAction}
-            loading={loading}
-          />
-        </TabsContent>
-
-        <TabsContent value="messages">
-          <div className="h-[600px]">
-            {userId ? (
-              <Chat
-                currentUserId={userId}
-                collaborators={collaborators}
-                onSendMessageAction={handleSendMessageAction}
-                onLoadMessagesAction={handleLoadMessagesAction}
-                loading={loading}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Loading user information...</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">
+                          Suggested Members ({suggestions.length})
+                        </h3>
+                        {suggestions.length === 0 ? (
+                          <div className="text-center py-8">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                              <UserPlus className="w-8 h-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-500">No suggestions available</p>
+                            <p className="text-sm text-gray-400">
+                              Use the search filters to find members
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                            {suggestions.map((member) => (
+                              <MemberCard
+                                key={member.id}
+                                member={member}
+                                onSendRequest={handleSendRequest}
+                                onMessage={handleMessageUserAction}
+                                onViewProfile={handleViewProfileAction}
+                                loading={loading}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            )}
-          </div>
-        </TabsContent>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="requests">
-          <RequestsPane
-            incoming={requests.incoming}
-            outgoing={requests.outgoing}
-            onAcceptRequestAction={handleAcceptRequestAction}
-            onRejectRequestAction={handleRejectRequestAction}
-            loading={loading}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="collaborators">
+            <ViewCollaborators
+              collaborators={collaborators}
+              onMessageAction={handleMessageUserAction}
+              onViewProfileAction={handleViewProfileAction}
+              loading={loading}
+            />
+          </TabsContent>
+
+          <TabsContent value="messages">
+            <div className="h-[600px] max-h-[80vh]">
+              {userId ? (
+                <Chat
+                  currentUserId={userId}
+                  collaborators={collaborators}
+                  onSendMessageAction={handleSendMessageAction}
+                  onLoadMessagesAction={handleLoadMessagesAction}
+                  loading={loading}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading user information...</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="requests">
+            <RequestsPane
+              incoming={requests.incoming}
+              outgoing={requests.outgoing}
+              onAcceptRequestAction={handleAcceptRequestAction}
+              onRejectRequestAction={handleRejectRequestAction}
+              loading={loading}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
