@@ -29,7 +29,7 @@ export default function FAQPage() {
 
         <div>
           <h2 className="font-semibold text-lg">📧 How can I contact support?</h2>
-          <p>Send us an email at <a href="mailto:support@skillup.in" className="underline">support@skillup.in</a>. We usually reply within 24 hours.</p>
+          <p>Send us an email at <a href="mailto:niche.findyourniche@gmail.com" className="underline">niche.findyourniche@gmail.com</a>. We usually reply within 24 hours.</p>
         </div>
       </div>
     </div>
