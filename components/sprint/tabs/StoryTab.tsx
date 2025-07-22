@@ -2,11 +2,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Play, RotateCcw, BookOpen, Video, ExternalLink, Sparkles } from 'lucide-react';
-import { Card,CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Play, RotateCcw, BookOpen, Video, ExternalLink, Sparkles, ArrowLeft } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import IntroStoryWrapper from '../IntroStoryWrapper';
 import { Progress } from '@/components/ui/progress';
 import { StoryEngineWrapper } from '../StoryEngineWrapper';
@@ -67,13 +66,13 @@ interface StoryTabProps {
 }
 
 export function StoryTab({ data, workspaceId }: StoryTabProps) {
-  const [showIntroReplay, setShowIntroReplay] = useState(false);
-  const [showStoryEngine, setShowStoryEngine] = useState(false);
-
+  // State to control what's shown in the video area
+  const [videoAreaContent, setVideoAreaContent] = useState<'video' | 'story' | 'intro'>('video');
+  
   const teamId = data.team?.id;
   const isSprintStarted = data.cohort?.activated || false;
   
-  // Simple progress tracking
+  // Story state calculations
   const storyState = data.storyState;
   const hasSeenIntro = storyState?.introComplete || false;
   const segmentsCompleted = storyState?.state?.completedSegments?.length || 0;
@@ -82,28 +81,92 @@ export function StoryTab({ data, workspaceId }: StoryTabProps) {
 
   // Story video configuration
   const storyVideoUrl = "/sprint/assets/intro/mentor-welcome.mp4";
-  
-  const getAutoplayUrl = (url: string) => {
-    // Simple autoplay setup for local videos
-    return url;
-  };
 
   // Early return if sprint not started
   if (!isSprintStarted) {
     return (
-      <div className="text-center py-12">
+      <div className="flex flex-col items-center justify-center text-center py-12">
         <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
           <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">Sprint Not Started</h3>
-        <p className="text-gray-600">
+        <p className="text-gray-600 max-w-md">
           The interactive story will be available once the sprint begins.
         </p>
       </div>
     );
   }
+
+  // Function to render content in the video area
+ // Just change this part in the renderVideoAreaContent function:
+
+// Function to render content in the video area
+const renderVideoAreaContent = () => {
+  switch (videoAreaContent) {
+    case 'story':
+  return (
+    <div className="w-full h-full bg-white relative">
+      <div className="absolute inset-0 bg-white z-0"></div>
+      <div className="relative z-10 w-full h-full">
+        <StoryEngineWrapper
+          teamId={teamId || ''}
+          initialSegment={null}
+        />
+      </div>
+    </div>
+  );
+
+    
+    case 'intro':
+      return (
+        <div className="w-full h-full flex items-center justify-center">
+          <IntroStoryWrapper
+            isOpen={true}
+            onClose={() => setVideoAreaContent('video')}
+            onComplete={() => setVideoAreaContent('video')}
+            mode="replay"
+            videoUrl="/sprint/assets/intro/mentor-welcome.mp4"
+            teamName={data.team?.name || 'Your Team'}
+          />
+        </div>
+      );
+    
+    default:
+      return (
+        <div className="relative w-full h-full">
+          <video
+            src={storyVideoUrl}
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+          {/* Changed from bg-black bg-opacity-40 to bg-white bg-opacity-90 */}
+          <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center">
+            <div className="text-center">
+              <Button
+                size="lg"
+                className="bg-purple-600 hover:bg-purple-700 text-white text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
+                onClick={() => setVideoAreaContent('story')}
+              >
+                <Play className="w-6 h-6 mr-3 fill-current" />
+                {hasSeenIntro ? 'Continue Your Journey' : 'Start Interactive Story'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+  }
+};
+
+// And also change the video container background:
+<div className="aspect-video bg-white rounded-lg relative overflow-hidden border border-gray-200">
+  {renderVideoAreaContent()}
+</div>
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -125,86 +188,82 @@ export function StoryTab({ data, workspaceId }: StoryTabProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Featured Story Video */}
+                {/* Featured Story Video/Content Area - Fixed container */}
                 <div className="space-y-4">
                   <div className="aspect-video bg-black rounded-lg relative overflow-hidden">
-                    <video
-                      src={storyVideoUrl}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    />
-                    {/* Overlay with play button */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                      <Button
-                        size="lg"
-                        className="bg-white/90 text-black hover:bg-white text-lg px-8 py-4 rounded-full shadow-lg"
-                        onClick={() => setShowStoryEngine(true)}
-                      >
-                        <Play className="w-6 h-6 mr-3 fill-current" />
-                        {hasSeenIntro ? 'Continue Your Journey' : 'Start Interactive Story'}
-                      </Button>
-                    </div>
+                    {renderVideoAreaContent()}
                   </div>
 
-                  {/* Story Info */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
+                  {/* Story Info and Controls - Fixed alignment */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
                         Sprint Story Experience
                       </h3>
                       <p className="text-gray-600 text-sm">
                         Interactive startup journey • 5 chapters • {segmentsCompleted}/{totalSegments} segments completed
                       </p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowStoryEngine(true)}
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Start Story
-                      </Button>
+                    <div className="flex gap-2 flex-shrink-0">
+                      {videoAreaContent !== 'video' && (
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setVideoAreaContent('video')}
+                          className="whitespace-nowrap"
+                        >
+                          <ArrowLeft className="w-4 h-4 mr-2" />
+                          Back to Video
+                        </Button>
+                      )}
+                      {videoAreaContent === 'video' && (
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setVideoAreaContent('story')}
+                          className="whitespace-nowrap"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Start Story
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Story Features */}
+                {/* Story Features - Fixed grid layout */}
                 <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
                   <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-purple-600" />
                     Your Interactive Journey
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                        Problem Discovery & Research
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                        <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                        <span>Problem Discovery & Research</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                        Design & Planning Strategy
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                        <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                        <span>Design & Planning Strategy</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                        Development & Implementation
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                        <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                        <span>Development & Implementation</span>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
-                        Testing & Quality Assurance
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                        <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                        <span>Testing & Quality Assurance</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <span className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">5</span>
-                        Launch & Growth Strategy
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                        <span className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">5</span>
+                        <span>Launch & Growth Strategy</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-purple-600 font-medium">
-                        <Sparkles className="w-4 h-4" />
-                        Make choices that shape your path!
+                      <div className="flex items-center gap-3 text-sm text-purple-600 font-medium">
+                        <Sparkles className="w-4 h-4 flex-shrink-0" />
+                        <span>Make choices that shape your path!</span>
                       </div>
                     </div>
                   </div>
@@ -271,7 +330,8 @@ export function StoryTab({ data, workspaceId }: StoryTabProps) {
               <CardContent className="space-y-3">
                 <Button 
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  onClick={() => setShowStoryEngine(true)}
+                  onClick={() => setVideoAreaContent('story')}
+                  disabled={videoAreaContent === 'story'}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   {hasSeenIntro ? 'Continue Journey' : 'Start Story'}
@@ -280,11 +340,23 @@ export function StoryTab({ data, workspaceId }: StoryTabProps) {
                 <Button 
                   variant="outline" 
                   className="w-full" 
-                  onClick={() => setShowIntroReplay(true)}
+                  onClick={() => setVideoAreaContent('intro')}
+                  disabled={videoAreaContent === 'intro'}
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Watch Introduction
                 </Button>
+
+                {videoAreaContent !== 'video' && (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full" 
+                    onClick={() => setVideoAreaContent('video')}
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Back to Welcome Video
+                  </Button>
+                )}
               </CardContent>
             </Card>
 
@@ -326,40 +398,6 @@ export function StoryTab({ data, workspaceId }: StoryTabProps) {
           </div>
         </div>
       </div>
-
-      {/* Story Engine Modal */}
-      {showStoryEngine && (
-        <Dialog open={showStoryEngine} onOpenChange={setShowStoryEngine}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Sprint Story</DialogTitle>
-            </DialogHeader>
-            <StoryEngineWrapper
-              teamId={teamId || ''}
-              initialSegment={null}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Intro Replay Modal */}
-      {showIntroReplay && (
-        <Dialog open={showIntroReplay} onOpenChange={setShowIntroReplay}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Sprint Introduction</DialogTitle>
-            </DialogHeader>
-            <IntroStoryWrapper
-              isOpen={showIntroReplay}
-              onClose={() => setShowIntroReplay(false)}
-              onComplete={() => setShowIntroReplay(false)}
-              mode="replay"
-              videoUrl="/sprint/assets/intro/mentor-welcome.mp4"
-              teamName={data.team?.name || 'Your Team'}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
