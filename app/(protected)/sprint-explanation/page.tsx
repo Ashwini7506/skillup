@@ -116,7 +116,7 @@ const SprintExplanationPage = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 leading-relaxed">
-                    48 hours of pure, uninterrupted focus on building something extraordinary. 
+                    4 weeks of pure, uninterrupted focus on building something extraordinary. 
                     No distractions, just pure creation energy.
                   </p>
                 </CardContent>
@@ -164,7 +164,7 @@ const SprintExplanationPage = () => {
               See Sprint <span className="text-yellow-400">Magic</span> in Action
             </h2>
             <p className="text-xl text-blue-200 max-w-2xl mx-auto">
-              Watch how teams transform from strangers to legends in just 48 hours
+              Watch how teams transform from strangers to legends in just 4 weeks
             </p>
           </div>
 
