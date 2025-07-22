@@ -13,7 +13,9 @@ import {
   Trophy,
   Star,
   Eye,
-  CreditCard
+  CreditCard,
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
@@ -43,6 +45,7 @@ export const Navbar = ({ id, email, name, image }: Props) => {
   const workspaceId = useWorkspaceId();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   type PageAction = "create" | "notifications";
 
@@ -186,6 +189,11 @@ export const Navbar = ({ id, email, name, image }: Props) => {
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  useEffect(() => {
+    // Close mobile menu when pathname changes
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const handleQuickAction = (action: string) => {
     setShowQuickActions(false);
     console.log(`Executing action: ${action}`);
@@ -196,21 +204,19 @@ export const Navbar = ({ id, email, name, image }: Props) => {
   };
 
   return (
-    <nav
-      className={`w-full bg-background border-b border-border transition-all duration-300`}
-    >
+   <nav className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 transition-all duration-300 sticky top-0 z-50 shadow-sm">
       <div
         className={`h-1 bg-gradient-to-r ${currentPage.gradient} transition-all duration-500 ${
           isAnimating ? "animate-pulse" : ""
         }`}
       />
 
-      <div className="flex items-center justify-between px-6 py-4">
-        {/* Left spacer */}
-        <div className="flex-1"></div>
+      <div className="flex items-center justify-between px-4 sm:px-6 py-4">
+        {/* Left spacer - hidden on mobile */}
+        <div className="hidden lg:flex flex-1"></div>
 
-        {/* Navigation Buttons - Centered */}
-        <div className="flex items-center space-x-3">
+        {/* Navigation Buttons - Desktop */}
+        <div className="hidden lg:flex items-center space-x-3">
           {navigationButtons.map((navItem) => {
             const NavIcon = navItem.icon;
             const isActive = isActivePath(navItem.path);
@@ -236,14 +242,42 @@ export const Navbar = ({ id, email, name, image }: Props) => {
           })}
         </div>
 
+        {/* Mobile Navigation Buttons */}
+        <div className="flex lg:hidden items-center space-x-1 flex-1">
+          {navigationButtons.slice(0, 3).map((navItem) => {
+            const NavIcon = navItem.icon;
+            const isActive = isActivePath(navItem.path);
+            
+            return (
+              <Link key={navItem.path} href={navItem.href}>
+                <Button
+                  variant={isActive ? "default" : "ghost"}
+                  size="sm"
+                  className={`relative transition-all duration-200 p-2 ${
+                    isActive
+                      ? `bg-gradient-to-r ${navItem.gradient} text-white shadow-lg`
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <NavIcon className="h-4 w-4" />
+                  {isActive && (
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
+                  )}
+                </Button>
+              </Link>
+            );
+          })}
+        </div>
+
         {/* Right Side Actions */}
-        <div className="flex items-center space-x-4 flex-1 justify-end">
+        <div className="flex items-center space-x-2 sm:space-x-4 justify-end lg:flex-1">
+          {/* Quick Actions - Hidden on mobile */}
           {currentQuickActions.length > 0 && (
             <Popover open={showQuickActions} onOpenChange={setShowQuickActions}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="relative group">
+                <Button variant="outline" className="relative group hidden md:flex">
                   <Zap className="h-4 w-4 mr-2 text-yellow-500" />
-                  Quick Actions
+                  <span className="hidden lg:inline">Quick Actions</span>
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                 </Button>
               </PopoverTrigger>
@@ -265,11 +299,17 @@ export const Navbar = ({ id, email, name, image }: Props) => {
             </Popover>
           )}
 
+          {/* Notifications - Fixed positioning issue */}
           {currentPage.actions.includes("notifications") && (
-            <NotificationDropdown />
+            <div className="hidden sm:block relative">
+              <NotificationDropdown />
+            </div>
           )}
 
-<ThemeToggle/>
+          {/* Theme Toggle */}
+          {/* <ThemeToggle /> */}
+
+          {/* Profile */}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -311,6 +351,61 @@ export const Navbar = ({ id, email, name, image }: Props) => {
           </Popover>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-background border-t border-border">
+          <div className="px-4 py-3 space-y-2">
+            {navigationButtons.map((navItem) => {
+              const NavIcon = navItem.icon;
+              const isActive = isActivePath(navItem.path);
+              
+              return (
+                <Link key={navItem.path} href={navItem.href}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start transition-all duration-200 ${
+                      isActive
+                        ? `bg-gradient-to-r ${navItem.gradient} text-white shadow-lg`
+                        : "hover:bg-accent"
+                    }`}
+                  >
+                    <NavIcon className="h-4 w-4 mr-3" />
+                    {navItem.label}
+                  </Button>
+                </Link>
+              );
+            })}
+            
+            {/* Mobile Quick Actions */}
+            {currentQuickActions.length > 0 && (
+              <div className="pt-2 border-t border-border">
+                <div className="text-xs font-medium text-muted-foreground mb-2 px-3">
+                  Quick Actions
+                </div>
+                {currentQuickActions.map((action) => (
+                  <Button
+                    key={action.action}
+                    variant="ghost"
+                    className="w-full justify-start text-left hover:bg-accent"
+                    onClick={() => handleQuickAction(action.action)}
+                  >
+                    <action.icon className="h-4 w-4 mr-3" />
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {/* Mobile Notifications - Fixed positioning */}
+            {currentPage.actions.includes("notifications") && (
+              <div className="pt-2 border-t border-border relative">
+                <NotificationDropdown />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

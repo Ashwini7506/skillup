@@ -12,7 +12,7 @@ import { Paperclip } from "lucide-react";
 
 interface TaskProps {
     task: Task & {
-        assignedTo: User;
+        assignedTo: User | null;
         project: ProjectProps;
         attachments: File[];
     }
@@ -34,20 +34,24 @@ export const TaskDetails = ({ task }: TaskProps) => {
                 <div className="w-full md:w-auto mt-4 md:mt-0">
                     <EditTaskDialog
                         key={new Date().getTime()}
-                        task={task}
+                        task={task as any}
                         project={task.project}
                     />
                 </div>
                 <div className="text-right">
                     <span className="text-sm text-muted-foreground font-medium block">Assigned To:</span>
-                    <div className="flex items-center gap-2 justify-end">
-                        <ProfileAvatar
-                            url={task.assignedTo.image || undefined}
-                            name={task.assignedTo.name}
-                            className="w-8 h-8"
-                        />
-                        <span className="text-sm font-medium block text-muted-foreground">{task.assignedTo.name}</span>
-                    </div>
+                    {task.assignedTo ? (
+                        <div className="flex items-center gap-2 justify-end">
+                            <ProfileAvatar
+                                url={task.assignedTo.image || undefined}
+                                name={task.assignedTo.name}
+                                className="w-8 h-8"
+                            />
+                            <span className="text-sm font-medium block text-muted-foreground">{task.assignedTo.name}</span>
+                        </div>
+                    ) : (
+                        <span className="text-sm font-medium block text-muted-foreground">Unassigned</span>
+                    )}
                 </div>
             </div>
         </CardHeader>

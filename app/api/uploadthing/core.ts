@@ -1,75 +1,89 @@
+// app/api/uploadthing/core.ts
 import { userRequired } from "@/app/data/user/is-user-authenticated";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { db } from "@/lib/db";
 
 const f = createUploadthing();
 
-
-
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
+  // Image uploads
   imageUploader: f({
     image: {
-      /**
-       * For full list of options and defaults, see the File Route API reference
-       * @see https://docs.uploadthing.com/file-routes#route-config
-       */
-      maxFileSize: "1MB",
-      maxFileCount: 3,
+      maxFileSize: "8MB",
+      maxFileCount: 5,
     },
   })
-    // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const {user} = await userRequired()
-
-      // If you throw, the user will not be able to upload
+      const { user } = await userRequired();
       if (!user) throw new UploadThingError("Unauthorized");
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("Image upload complete for userId:", metadata.userId);
+      
+      // Save file to database (without taskId for now)
+      await db.file.create({
+        data: {
+          url: file.url,
+          name: file.name,
+          type: "IMAGE",
+          // taskId: null, // Can be updated later if needed
+        }
+      });
 
-      console.log("file url", file.ufsUrl);
-
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
     }),
-    // FileRouter for your app, can contain multiple FileRoutes
 
-  // Define as many FileRoutes as you like, each with a unique routeSlug
+  // Document uploads (PDF only)
   documentUploader: f({
-    "application/pdf": {
-      /**
-       * For full list of options and defaults, see the File Route API reference
-       * @see https://docs.uploadthing.com/file-routes#route-config
-       */
-      maxFileSize: "4MB",
-      maxFileCount: 3,
+    "application/pdf": { 
+      maxFileSize: "16MB", 
+      maxFileCount: 3 
     },
   })
-    // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const {user} = await userRequired()
-
-      // If you throw, the user will not be able to upload
+      const { user } = await userRequired();
       if (!user) throw new UploadThingError("Unauthorized");
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("PDF upload complete for userId:", metadata.userId);
+      
+      await db.file.create({
+        data: {
+          url: file.url,
+          name: file.name,
+          type: "PDF",
+        }
+      });
 
-      console.log("file url", file.ufsUrl);
+      return { uploadedBy: metadata.userId };
+    }),
 
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+  // Video uploads
+  videoUploader: f({
+    video: {
+      maxFileSize: "64MB",
+      maxFileCount: 2,
+    },
+  })
+    .middleware(async ({ req }) => {
+      const { user } = await userRequired();
+      if (!user) throw new UploadThingError("Unauthorized");
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Video upload complete for userId:", metadata.userId);
+      await db.file.create({
+        data: {
+          url: file.ufsUrl,
+          name: file.name,
+          type: "VIDEO",
+        }
+      });
       return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;

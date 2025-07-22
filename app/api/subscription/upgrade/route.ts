@@ -3,7 +3,8 @@ import { db } from '@/lib/db';
 
 const SKILLUP_TEAM_USER_ID = [
   "kp_bef756ed32e24ad99d5d9fa035832eb5",
-  "kp_b571933f34f64bd5b2d1894bfa096e98"
+  "kp_b571933f34f64bd5b2d1894bfa096e98",
+  "kp_7df84857bdeb4d48b6120a06d093c45f"
 ];
 
 // Utility function to add days to a date
@@ -35,10 +36,17 @@ export async function POST(request: NextRequest) {
     let currentPeriodEnd: Date;
     let frequency: string;
 
-    if (plan === 'PRO') {
+    if (plan === 'trial') {
+      currentPeriodEnd = addDays(new Date(), 3); // 14-day trial
+      frequency = 'trial';
+    }
+
+    else if (plan === 'PRO') {
       currentPeriodEnd = addDays(new Date(), 30);
       frequency = 'monthly';
-    } else { // ENTERPRISE
+    }
+    
+    else { // ENTERPRISE
       currentPeriodEnd = addDays(new Date(), 90);
       frequency = 'quarterly';
     }

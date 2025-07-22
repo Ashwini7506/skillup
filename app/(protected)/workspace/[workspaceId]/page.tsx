@@ -4,6 +4,8 @@ import React from "react";
 import { ScrollToProjectCard } from "@/components/explore/scroll-to-project-card";
 import { ReceiptPoundSterlingIcon } from "lucide-react";
 import Tracker from "@/components/Tracker";
+import { VotingBoard } from "@/components/sprint/VotingBoard";
+import { db } from "@/lib/db";
 
 interface PageProps {
   params: Promise<{ workspaceId: string }>;
@@ -13,15 +15,22 @@ export default async function WorkspaceHome({ params }: PageProps) {
   await userRequired();
   const { workspaceId } = await params;
 
+  // ✅ Check for active cohort but don't block the homepage
+  const currentCohort = await db.sprintCohort.findFirst({
+    where: {
+      workspaceId,
+      activated: true,
+    },
+  });
+
   return (
     <div className="min-h-screen">
       <Tracker />
       {/* Hero Section */}
-<div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 lg:py-32 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 lg:py-32 relative overflow-hidden">
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 opacity-30">
-          {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%236366f1" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
-        </div> */}
+          {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%236366f1" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div> */}
         </div>
         
         {/* Floating Elements */}
@@ -136,6 +145,26 @@ export default async function WorkspaceHome({ params }: PageProps) {
         </div>
       </div>
 
+      {/* ✅ Conditional VotingBoard Section - Only show if there's an active cohort */}
+      
+        <div className="w-full bg-gray-50 py-16 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                🗳️ Team Voting Board
+              </h2>
+              <p className="text-gray-600 text-xl max-w-3xl mx-auto">
+                Support your favorite teams and see real-time voting results from the community!
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <VotingBoard/>
+            </div>
+          </div>
+        </div>
+      
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-16">
         {/* Action Cards Grid - Horizontal Layout */}
@@ -202,6 +231,7 @@ export default async function WorkspaceHome({ params }: PageProps) {
             {/* Explore Members Card */}
             <a 
               href={`/workspace/${workspaceId}/members`}  
+              
               className="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-8 transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 block h-full relative overflow-hidden"
             >
               <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8"></div>
@@ -316,21 +346,6 @@ export default async function WorkspaceHome({ params }: PageProps) {
               </p>
             </div>
             
-            {/* <div>
-              <h4 className="text-xl font-semibold mb-6">Quick Links</h4>
-              <ul className="space-y-3">
-                <li><a href="/projects" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">📁</span> Projects
-                </a></li>
-                <li><a href="/blogs" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">📚</span> Blogs
-                </a></li>
-                <li><a href="/members" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2">👥</span> Members
-                </a></li>
-              </ul>
-            </div> */}
-            
             <div>
               <h4 className="text-xl font-semibold mb-6">Support</h4>
               <ul className="space-y-3">
@@ -348,11 +363,10 @@ export default async function WorkspaceHome({ params }: PageProps) {
           </div>
           
           <div className="border-t border-gray-700 mt-12 pt-8 text-center">
-            <p className="text-gray-400 text-lg"> 2025 SkillUp. All rights reserved. Made with ❤️ for learners worldwide.</p>
+            <p className="text-gray-400 text-lg">© 2025 SkillUp. All rights reserved. Made with ❤️ for learners worldwide.</p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-

@@ -5,6 +5,7 @@ import { AccessLevel, Prisma } from "@prisma/client";
 export const getWorkspaceProjectByWorkspaceId = async (workspaceId: string) => {
   try {
     const { user } = await userRequired();
+     console.log('Checking workspace access:', { workspaceId, userId: user?.id });
 
     const isUserMember = await db.workspaceMember.findUnique({
       where: {

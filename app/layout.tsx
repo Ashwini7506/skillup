@@ -6,7 +6,6 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "sonner";
 import MixpanelProvider from "@/components/MixpanelProvider";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

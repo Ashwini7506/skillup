@@ -46,6 +46,7 @@ import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
 import { updateTask } from "@/app/actions/task";
 import { FileUpload } from "../file-upload";
+// import { FileUpload } from "../file-upload";
 
 interface Props {
     project: ProjectProps;

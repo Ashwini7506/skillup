@@ -17,6 +17,10 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
   const pathname = usePathname();
   const workspaceId = useWorkspaceId();
 
+  // TEMPORARILY DISABLED: Allow all users to pass through
+  // Remove this comment and uncomment the useEffect below to re-enable subscription checking
+
+  /*
   useEffect(() => {
     if (loading || !workspaceId) return;
 
@@ -37,8 +41,10 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
       router.replace(`/workspace/${workspaceId}/subscription`);
     }
   }, [loading, subscription, pathname, router, workspaceId]);
+  */
 
   // Helper function to check if subscription is expired
+  // Kept for when subscription checking is re-enabled
   const checkSubscriptionExpired = (subscription: any) => {
     // If status is not ACTIVE, it's expired
     if (subscription.status !== 'ACTIVE') {
@@ -61,15 +67,14 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
     }
     
     const tomorrow = new Date(periodEndDate);
-tomorrow.setDate(tomorrow.getDate() + 1);
-tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
 
-return currentDate >= tomorrow;
-
+    return currentDate >= tomorrow;
   };
 
-  // block rendering until decision is made
-  if (loading || !subscription) {
+  // Show loading only while subscription data is being fetched
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="animate-spin w-6 h-6 text-muted-foreground" />
@@ -77,6 +82,11 @@ return currentDate >= tomorrow;
     );
   }
 
+  // TEMPORARILY ALLOW ALL USERS - bypass subscription checks
+  return <>{children}</>;
+
+  // COMMENTED OUT: Original subscription checking logic
+  /*
   const isExpired = checkSubscriptionExpired(subscription);
   const isAllowedPath = pathname.includes(`/workspace/${workspaceId}/subscription`);
 
@@ -86,4 +96,5 @@ return currentDate >= tomorrow;
   }
 
   return <>{children}</>;
+  */
 };

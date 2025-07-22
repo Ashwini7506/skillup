@@ -86,7 +86,8 @@ interface PricingCardsProps {
 // Special user ID that bypasses payment
 const SKILLUP_TEAM_USER_ID = [
   "kp_bef756ed32e24ad99d5d9fa035832eb5",
-  "kp_b571933f34f64bd5b2d1894bfa096e98"
+  "kp_b571933f34f64bd5b2d1894bfa096e98",
+  "kp_7df84857bdeb4d48b6120a06d093c45f",
 ];
 
 export function PricingCards({ currentPlan, onUpgradeAction }: PricingCardsProps) {

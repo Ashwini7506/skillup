@@ -116,15 +116,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Clone documentation if it exists
-    if (originalProject.documentation && originalProject.documentation.length > 0) {
-      await db.documentation.create({
-        data: {
-          content: originalProject.documentation[0].content,
-          projectId: clonedProject.id,
-          updatedBy: user.user.id,
-        },
-      });
-    }
+    if (originalProject.documentation) {
+  await db.documentation.create({
+    data: {
+      content: originalProject.documentation.content,
+      projectId: clonedProject.id,
+      updatedBy: user.user.id,
+    },
+  });
+}
 
     // Create activity record
     await db.activity.create({

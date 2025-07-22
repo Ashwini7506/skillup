@@ -17,7 +17,7 @@ export default function HelpCenterPage() {
           <li>Refresh the page or log out and log back in</li>
           <li>Check your billing status under <code>/workspace/[id]/subscription</code></li>
           <li>Visit our <Link className="underline" href="/subscription-policies">Subscription Policies</Link></li>
-          <li>Email us at <Link href="mailto:support.skillup@gmail.com" className="underline">support.skillup@gmail.com</Link></li>
+          <li>Email us at <Link href="mailto:niche.findyournniche@gmail.com" className="underline">niche.findyournniche@gmail.com</Link></li>
         </ul>
 
         <p className="pt-4">

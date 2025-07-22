@@ -46,10 +46,14 @@ export async function GET(request: NextRequest) {
     };
 
     if (filter === "team") {
-      whereClause.createdById = SKILLUP_TEAM_USER_ID;
+      whereClause.createdById = {
+        in: SKILLUP_TEAM_USER_ID,
+      };
     } else if (filter === "community") {
       whereClause.NOT = {
-        createdById: SKILLUP_TEAM_USER_ID,
+        createdById: {
+          in: SKILLUP_TEAM_USER_ID,
+        },
       };
     }
 

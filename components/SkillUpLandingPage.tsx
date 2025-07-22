@@ -9,14 +9,14 @@ import { useTypewriter } from "@/hooks/useTypewriter";
 import joblists from "@/utils/joblists";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { 
-  Users, 
-  FolderOpen, 
-  Kanban, 
-  Layout, 
-  TrendingUp, 
-  UserCheck, 
-  BarChart3, 
+import {
+  Users,
+  FolderOpen,
+  Kanban,
+  Layout,
+  TrendingUp,
+  UserCheck,
+  BarChart3,
   Award,
   ChevronDown,
   Menu,
@@ -31,6 +31,7 @@ import {
   Clock,
   Star
 } from 'lucide-react';
+import { Avatar, AvatarImage } from './ui/avatar';
 
 interface SkillUpLandingPageProps {
   isLoggedIn: boolean;
@@ -175,7 +176,7 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
       if (planId === 'FREE') {
         // For free plan, just create the subscription via GET request
         const response = await fetch(`/api/subscription?userId=${user.id}`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to create free subscription');
         }
@@ -244,12 +245,12 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
         <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200/20 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-1/3 right-20 w-48 h-48 bg-purple-200/20 rounded-full blur-xl animate-pulse delay-1000"></div>
         <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-pink-200/20 rounded-full blur-xl animate-pulse delay-2000"></div>
-        
+
         {/* Animated Grid */}
         <div className="absolute inset-0 opacity-[0.03]">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] animate-pulse"></div>
         </div>
-        
+
         {/* Floating Gears */}
         <div className="absolute top-1/4 left-1/3 animate-spin-slow">
           <div className="w-16 h-16 border-2 border-blue-300/20 rounded-full">
@@ -257,7 +258,7 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
             <div className="absolute inset-4 border-2 border-blue-300/20 rounded-full"></div>
           </div>
         </div>
-        
+
         <div className="absolute bottom-1/3 right-1/3 animate-spin-slow-reverse">
           <div className="w-12 h-12 border-2 border-purple-300/20 rounded-full">
             <div className="absolute inset-1 border-2 border-purple-300/20 rounded-full"></div>
@@ -267,18 +268,20 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
       </div>
 
       {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-lg' : 'bg-transparent'
-      }`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-20 h-20 rounded-lg flex items-center justify-center">
+                {/* <Sparkles className="w-5 h-5 text-white" /> */}
+                <Avatar className="w-30 h-30">
+                  <AvatarImage src="/skillup.png" className="object-cover" />
+                </Avatar>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {/* <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 SkillUp
-              </span>
+              </span> */}
             </div>
 
             {/* Desktop Navigation */}
@@ -287,9 +290,8 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                    activeSection === item.toLowerCase() ? 'text-blue-600' : 'text-gray-700'
-                  }`}
+                  className={`text-sm font-medium transition-colors hover:text-blue-600 ${activeSection === item.toLowerCase() ? 'text-blue-600' : 'text-gray-700'
+                    }`}
                 >
                   {item}
                 </button>
@@ -472,15 +474,14 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex justify-center mt-6 space-x-2">
               {quotes.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentQuoteIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentQuoteIndex ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors ${index === currentQuoteIndex ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
                 />
               ))}
             </div>
@@ -510,17 +511,16 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
             {pricingPlans.map((plan) => {
               const Icon = plan.icon;
               const isSelected = selectedPlan === plan.id;
-              
+
               return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-3xl p-8 transition-all duration-300 hover:scale-105 cursor-pointer ${
-                    plan.popular
+                  className={`relative rounded-3xl p-8 transition-all duration-300 hover:scale-105 cursor-pointer ${plan.popular
                       ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-2xl scale-105'
                       : isSelected
-                      ? 'bg-white/80 backdrop-blur-sm shadow-xl border-2 border-blue-500'
-                      : 'bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl border border-white/20'
-                  }`}
+                        ? 'bg-white/80 backdrop-blur-sm shadow-xl border-2 border-blue-500'
+                        : 'bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl border border-white/20'
+                    }`}
                   onClick={() => setSelectedPlan(plan.id)}
                 >
                   {plan.popular && (
@@ -541,15 +541,13 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
 
                   <div className="text-center mb-8">
                     <div className="flex justify-center mb-4">
-                      <div className={`p-3 rounded-full ${
-                        plan.popular ? 'bg-white/20' : 'bg-gray-100'
-                      }`}>
-                        <Icon className={`h-6 w-6 ${
-                          plan.popular ? 'text-white' : 'text-gray-600'
-                        }`} />
+                      <div className={`p-3 rounded-full ${plan.popular ? 'bg-white/20' : 'bg-gray-100'
+                        }`}>
+                        <Icon className={`h-6 w-6 ${plan.popular ? 'text-white' : 'text-gray-600'
+                          }`} />
                       </div>
                     </div>
-                    
+
                     <h3 className={`text-2xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
                       {plan.name}
                     </h3>
@@ -569,9 +567,8 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start space-x-3">
-                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                          plan.popular ? 'text-white' : 'text-green-600'
-                        }`} />
+                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-white' : 'text-green-600'
+                          }`} />
                         <span className={plan.popular ? 'text-white' : 'text-gray-700'}>
                           {feature}
                         </span>
@@ -580,13 +577,12 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                   </ul>
 
                   <Button
-                    className={`w-full py-3 transition-all duration-300 ${
-                      isSelected
+                    className={`w-full py-3 transition-all duration-300 ${isSelected
                         ? 'bg-green-600 hover:bg-green-700 text-white'
                         : plan.popular
-                        ? 'bg-white text-blue-600 hover:bg-gray-100'
-                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                    }`}
+                          ? 'bg-white text-blue-600 hover:bg-gray-100'
+                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                      }`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePlanSelection(plan.id);
@@ -636,11 +632,11 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                 <h3 className="text-3xl font-bold">SkillUp</h3>
               </div>
               <p className="text-gray-300 leading-relaxed max-w-md text-lg">
-                🌟 Bridging the gap between academic knowledge and industry requirements through 
+                🌟 Bridging the gap between academic knowledge and industry requirements through
                 personalized learning experiences and real-world projects.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-xl font-semibold mb-6">Support</h4>
               <ul className="space-y-3">
@@ -648,7 +644,7 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
                   <span className="mr-2">❓</span> Help Center
                 </a></li>
                 <li><a href="/subscription-policies" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                  <span className="mr-2"><ReceiptPoundSterlingIcon/></span> Subscription Policies
+                  <span className="mr-2"><ReceiptPoundSterlingIcon /></span> Subscription Policies
                 </a></li>
                 <li><a href="/faq" className="text-gray-300 hover:text-white transition-colors flex items-center">
                   <span className="mr-2">💬</span> FAQ
@@ -656,7 +652,7 @@ const SkillUpLandingPage = ({ isLoggedIn, user }: SkillUpLandingPageProps) => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-700 mt-12 pt-8 text-center">
             <p className="text-gray-400 text-lg"> 2025 SkillUp. All rights reserved. Made with ❤️ for learners worldwide.</p>
           </div>

@@ -7,6 +7,421 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                       String                  @id
+  name                     String
+  email                    String                  @unique
+  about                    String?
+  role                     String
+  job                      String
+  image                    String?
+  onboardingCompleted      Boolean                 @default(false)
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  positionOfResponsibility String[]
+  hardSkills               String[]
+  username                 String?
+  currentRole              String?
+  experience               String?
+  linkedinUrl              String?
+  githubUrl                String?
+  resumeUrl                String?
+  activities               Activity[]
+  comments                 Comment[]
+  sentJoinRequests         JoinRequest[]           @relation("SenderJoinRequests")
+  joinRequests             JoinRequest[]           @relation("RecipientJoinRequests")
+  receivedMessages         Message[]               @relation("MsgReceiver")
+  sentMessages             Message[]               @relation("MsgSender")
+  createdProjects          Project[]               @relation("CreatedProjects")
+  sprintEnrollments        SprintEnrollment[]
+  sprintInvitationTokens   SprintInvitationToken[]
+  sprintVotes              SprintVote[]
+  subscription             Subscription?
+  tasks                    Task[]
+  workspace                WorkspaceMember[]
+  invitationsSent          InvitationToken[]       @relation("InvitationSender")
+}
+
+model Workspace {
+  id            String            @id @default(uuid())
+  name          String
+  description   String?
+  ownerId       String?
+  inviteCode    String            @unique
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  projects      Project[]
+  sprintCohorts SprintCohort[]
+  members       WorkspaceMember[]
+  invitations   InvitationToken[]
+}
+
+model WorkspaceMember {
+  id            String          @id @default(uuid())
+  userId        String
+  workspaceId   String
+  accessLevel   AccessLevel     @default(MEMBER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  projectAccess ProjectAccess[]
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Project {
+  id            String            @id @default(uuid())
+  name          String
+  description   String?
+  workspaceId   String
+  visibility    ProjectVisibility @default(PERSONAL)
+  difficulty    Difficulty?
+  role          String?
+  createdById   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  activities    Activity[]
+  comments      Comment[]
+  documentation Documentation?
+  joinRequests  JoinRequest[]
+  createdBy     User?             @relation("CreatedProjects", fields: [createdById], references: [id])
+  Workspace     Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  projectAccess ProjectAccess[]
+  sprintStory   SprintStory?
+  sprintTeams   SprintTeam[]
+  tasks         Task[]
+  invitations   InvitationToken[]
+}
+
+model ProjectAccess {
+  id                String          @id @default(uuid())
+  workspaceMemberId String
+  projectId         String
+  hasAccess         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  Project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspaceMember   WorkspaceMember @relation(fields: [workspaceMemberId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceMemberId, projectId])
+}
+
+model InvitationToken {
+  id          String         @id @default(cuid())
+  email       String
+  token       String         @unique
+  expiresAt   DateTime
+  used        Boolean        @default(false)
+  type        InvitationType
+  workspaceId String?
+  projectId   String?
+  invitedBy   String
+  createdAt   DateTime       @default(now())
+  inviter     User           @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+  project     Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspace   Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("invitation_tokens")
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(LOW)
+  startDate   DateTime
+  dueDate     DateTime
+  position    Int
+  projectId   String
+  workspaceId String
+  assigneeId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attachments File[]
+  assignedTo  User?        @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id            String       @id @default(cuid())
+  type          ActivityType
+  description   String
+  userId        String
+  projectId     String?
+  joinRequestId String?
+  taskId        String?
+  commentId     String?
+  workspaceId   String?
+  fileId        String?
+  read          Boolean      @default(false)
+  metadata      Json?
+  createdAt     DateTime     @default(now())
+  joinRequest   JoinRequest? @relation(fields: [joinRequestId], references: [id], onDelete: Cascade)
+  project       Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([joinRequestId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  projectId String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model Documentation {
+  id        String   @id @default(uuid())
+  content   String
+  projectId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  type      FileType
+  taskId    String?
+  createdAt DateTime @default(now())
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model JoinRequest {
+  id          String     @id @default(cuid())
+  projectId   String?
+  userId      String
+  requesterId String
+  status      String     @default("PENDING")
+  createdAt   DateTime   @default(now())
+  activities  Activity[]
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  requester   User       @relation("SenderJoinRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  user        User       @relation("RecipientJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, userId, projectId])
+  @@index([projectId])
+  @@index([userId])
+  @@index([requesterId])
+}
+
+model Subscription {
+  id                String             @id @default(uuid())
+  userId            String             @unique
+  plan              SubscriptionPlan   @default(FREE)
+  status            SubscriptionStatus @default(ACTIVE)
+  lemonsqueezyId    String?
+  orderId           String?
+  customerId        String?
+  currentPeriodEnd  DateTime?
+  frequency         String             @default("monthly")
+  cancelAtPeriodEnd Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  receiver   User     @relation("MsgReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User     @relation("MsgSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([senderId])
+}
+
+model SprintCohort {
+  id          String                  @id @default(uuid())
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  activated   Boolean                 @default(false)
+  workspaceId String
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  workspace   Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  enrollments SprintEnrollment[]
+  invitations SprintInvitationToken[]
+  teams       SprintTeam[]
+
+  @@index([startDate])
+  @@index([endDate])
+  @@index([workspaceId])
+}
+
+model SprintEnrollment {
+  id           String       @id @default(uuid())
+  cohortId     String
+  userId       String
+  intendedRole String
+  createdAt    DateTime     @default(now())
+  cohort       SprintCohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, userId])
+  @@index([userId])
+}
+
+model SprintTeam {
+  id         String                @id @default(uuid())
+  name       String
+  cohortId   String
+  members    String[]
+  projectId  String?
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  cohort     SprintCohort          @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  project    Project?              @relation(fields: [projectId], references: [id])
+  storyState SprintTeamStoryState?
+  votes      SprintVote[]
+
+  @@index([cohortId])
+}
+
+model SprintTeamStoryState {
+  id        String     @id @default(uuid())
+  teamId    String     @unique
+  state     Json
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  team      SprintTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model SprintStory {
+  id            String          @id @default(uuid())
+  projectId     String          @unique
+  introVideoUrl String?
+  introScript   Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  chapters      SprintChapter[]
+  project       Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model SprintChapter {
+  id              String               @id @default(uuid())
+  storyId         String
+  order           Int
+  title           String
+  unlockCondition String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  story           SprintStory          @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  segments        SprintSegment[]
+  taskTemplates   SprintTaskTemplate[]
+
+  @@index([storyId])
+  @@index([order])
+}
+
+model SprintSegment {
+  id            String           @id @default(uuid())
+  chapterId     String
+  order         Int
+  type          StorySegmentType
+  character     String?
+  text          String?
+  mediaUrl      String?
+  nextSegmentId String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  choices       SprintChoice[]
+  chapter       SprintChapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([chapterId])
+  @@index([order])
+}
+
+model SprintChoice {
+  id            String        @id @default(uuid())
+  segmentId     String
+  text          String
+  nextSegmentId String?
+  allowedRoles  String[]
+  createdAt     DateTime      @default(now())
+  segment       SprintSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+
+  @@index([segmentId])
+}
+
+model SprintTaskTemplate {
+  id              String        @id @default(uuid())
+  chapterId       String
+  unlockSegmentId String?
+  title           String
+  description     String?
+  allowedRoles    String[]
+  expectedDays    Int?
+  deliverables    Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  chapter         SprintChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([chapterId])
+}
+
+model SprintVote {
+  id        String     @id @default(uuid())
+  voterId   String
+  teamId    String
+  score     Int
+  createdAt DateTime   @default(now())
+  team      SprintTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  voter     User       @relation(fields: [voterId], references: [id], onDelete: Cascade)
+
+  @@unique([voterId, teamId])
+  @@index([teamId])
+  @@index([voterId])
+}
+
+model SprintInvitationToken {
+  id           String       @id @default(uuid())
+  token        String       @unique
+  email        String
+  cohortId     String
+  workspaceId  String
+  intendedRole String
+  invitedById  String
+  used         Boolean      @default(false)
+  expiresAt    DateTime
+  createdAt    DateTime     @default(now())
+  cohort       SprintCohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([email])
+}
+
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}
+
 enum ProjectVisibility {
   PERSONAL
   PUBLIC
@@ -24,9 +439,7 @@ enum InvitationType {
   USER_VERIFICATION
 }
 
-// Enhanced Activity Types (replaces NotificationType)
 enum ActivityType {
-  // Task activities
   TASK_CREATED
   TASK_ASSIGNED
   TASK_COMPLETED
@@ -34,8 +447,6 @@ enum ActivityType {
   TASK_DELETED
   TASK_STATUS_CHANGED
   SKILL_RATED
-
-  // Project activities
   PROJECT_CREATED
   PROJECT_UPDATED
   PROJECT_DELETED
@@ -45,8 +456,6 @@ enum ActivityType {
   PROJECT_INVITATION_ACCEPTED
   PROJECT_INVITATION_DECLINED
   PROJECT_COMMENT_ADDED
-
-  // Workspace activities
   WORKSPACE_CREATED
   WORKSPACE_UPDATED
   WORKSPACE_MEMBER_JOINED
@@ -54,17 +463,11 @@ enum ActivityType {
   WORKSPACE_INVITATION_SENT
   WORKSPACE_INVITATION_ACCEPTED
   WORKSPACE_INVITATION_DECLINED
-
-  // Join request activities
   JOIN_REQUEST_SENT
   JOIN_REQUEST_ACCEPTED
   JOIN_REQUEST_DECLINED
-
-  // File activities
   FILE_UPLOADED
   FILE_DELETED
-
-  // General activities
   USER_JOINED
   PROFILE_UPDATED
   ACHIEVEMENT_UNLOCKED
@@ -72,137 +475,10 @@ enum ActivityType {
   REMINDER
 }
 
-model User {
-  id                  String            @id
-  name                String
-  email               String            @unique
-  about               String?
-  role                String
-  job                 String
-  workspace           WorkspaceMember[]
-  image               String?
-  tasks               Task[]
-  activities          Activity[]
-  comments            Comment[]
-  subscription        Subscription?
-  onboardingCompleted Boolean           @default(false)
-
-  createdProjects Project[]     @relation("CreatedProjects")
-  joinRequests    JoinRequest[] @relation("RecipientJoinRequests")
-
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  sentJoinRequests JoinRequest[] @relation("SenderJoinRequests")
-
-  sentMessages     Message[] @relation("MsgSender")
-  receivedMessages Message[] @relation("MsgReceiver")
-
-  invitationsSent InvitationToken[] @relation("InvitationSender")
-
-  positionOfResponsibility String[]
-  hardSkills String[]
-
-  username    String?  
-
-  currentRole String?  // new
-  experience String?  // new
-
-  linkedinUrl String?  // new
-  githubUrl   String?  // new
-  resumeUrl   String?  // new
-}
-
-model Workspace {
-  id          String            @id @default(uuid())
-  name        String
-  description String?
-  ownerId     String?
-  members     WorkspaceMember[]
-  projects    Project[]
-  inviteCode  String            @unique
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-
-  invitations InvitationToken[]
-}
-
 enum AccessLevel {
   OWNER
   MEMBER
   VIEWER
-}
-
-model WorkspaceMember {
-  id            String          @id @default(uuid())
-  userId        String
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspaceId   String
-  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  accessLevel   AccessLevel     @default(MEMBER)
-  projectAccess ProjectAccess[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  @@unique([userId, workspaceId])
-}
-
-model Project {
-  id            String          @id @default(uuid())
-  name          String
-  description   String?
-  workspaceId   String
-  Workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  tasks         Task[]
-  activities    Activity[]
-  comments      Comment[]
-  projectAccess ProjectAccess[]
-  documentation Documentation[]
-
-  visibility ProjectVisibility @default(PERSONAL)
-  difficulty Difficulty?
-  role       String?
-
-  createdById String?
-  createdBy   User?   @relation("CreatedProjects", fields: [createdById], references: [id])
-
-  joinRequests JoinRequest[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  invitations InvitationToken[]
-}
-
-model ProjectAccess {
-  id                String          @id @default(uuid())
-  workspaceMemberId String
-  workspaceMember   WorkspaceMember @relation(fields: [workspaceMemberId], references: [id], onDelete: Cascade)
-  projectId         String
-  Project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  hasAccess         Boolean         @default(false)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@unique([workspaceMemberId, projectId])
-}
-
-model InvitationToken {
-  id          String         @id @default(cuid())
-  email       String
-  token       String         @unique
-  expiresAt   DateTime
-  used        Boolean        @default(false)
-  type        InvitationType
-  workspaceId String?
-  projectId   String?
-  invitedBy   String
-  createdAt   DateTime       @default(now())
-
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  project   Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  inviter   User       @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade)
-
-  @@map("invitation_tokens")
 }
 
 enum TaskStatus {
@@ -221,126 +497,10 @@ enum TaskPriority {
   CRITICAL
 }
 
-model Task {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus   @default(TODO)
-  priority    TaskPriority @default(LOW)
-  startDate   DateTime
-  dueDate     DateTime
-  position    Int
-  projectId   String
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  workspaceId String
-  assigneeId  String?
-  assignedTo  User?        @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
-  attachments File[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-// OPTIMIZED Activity model - uses existing relationships to derive actor info
-model Activity {
-  id          String       @id @default(cuid())
-  type        ActivityType
-  description String
-
-  // Required: Every activity has a recipient user
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Use existing relationships to get actor information
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  // Join request relation - actor can be derived from joinRequest.requester
-  joinRequestId String?
-  joinRequest   JoinRequest? @relation(fields: [joinRequestId], references: [id], onDelete: Cascade)
-
-  // Store other related IDs as strings (no FK constraints)
-  taskId      String? // Task ID if task-related
-  commentId   String? // Comment ID if comment-related
-  workspaceId String? // Workspace ID if workspace-related
-  fileId      String? // File ID if file-related
-
-  // Notification-like properties
-  read Boolean @default(false)
-
-  // Store additional context as JSON including actor info when needed
-  metadata Json? // { actorId: "user123", actorName: "John Doe", taskTitle: "Fix Bug", etc. }
-
-  createdAt DateTime @default(now())
-
-  @@index([projectId])
-  @@index([userId])
-  @@index([read])
-  @@index([type])
-  @@index([createdAt])
-  @@index([joinRequestId])
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([projectId])
-  @@index([userId])
-}
-
-model Documentation {
-  id        String   @id @default(uuid())
-  content   String
-  projectId String   @unique
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  updatedBy String?
-}
-
 enum FileType {
   IMAGE
   PDF
-}
-
-model File {
-  id        String   @id @default(uuid())
-  name      String
-  url       String
-  type      FileType
-  taskId    String?
-  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-}
-
-model JoinRequest {
-  id String @id @default(cuid())
-
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  userId String
-  user   User   @relation("RecipientJoinRequests", fields: [userId], references: [id], onDelete: Cascade)
-
-  requesterId String
-  requester   User   @relation("SenderJoinRequests", fields: [requesterId], references: [id], onDelete: Cascade)
-
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
-
-  // Relation to activities
-  activities Activity[]
-
-  @@unique([requesterId, userId, projectId])
-  @@index([projectId])
-  @@index([userId])
-  @@index([requesterId])
+  VIDEO
 }
 
 enum SubscriptionPlan {
@@ -356,35 +516,10 @@ enum SubscriptionStatus {
   PAST_DUE
 }
 
-model Subscription {
-  id                String             @id @default(uuid())
-  userId            String             @unique
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan              SubscriptionPlan   @default(FREE)
-  status            SubscriptionStatus @default(ACTIVE)
-  lemonsqueezyId    String?
-  orderId           String?
-  customerId        String?
-  currentPeriodEnd  DateTime?
-  frequency         String             @default("monthly")
-  cancelAtPeriodEnd Boolean            @default(false)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-
-  @@index([userId])
-}
-
-model Message {
-  id         String   @id @default(cuid())
-  senderId   String
-  receiverId String
-  content    String
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
-
-  sender   User? @relation("MsgSender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver User  @relation("MsgReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  @@index([receiverId])
-  @@index([senderId])
+enum StorySegmentType {
+  DIALOGUE
+  CHOICE
+  TASK_UNLOCK
+  VIDEO
+  CHAPTER_END
 }

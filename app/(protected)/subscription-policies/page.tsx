@@ -45,7 +45,7 @@ export default function SubscriptionPoliciesPage() {
                 Refunds are not provided once a payment has been successfully processed. We strongly advise reviewing your plan before payment.
                 <br />
                 In rare exceptional cases (like accidental double payments), refunds may be considered at the sole discretion of SkillUp. Contact us at{" "}
-                <code className="bg-muted px-1 rounded">support@skillup.in</code>.
+                <code className="bg-muted px-1 rounded">niche.findyourniche@gmail.com</code>.
               </>
             ),
           },

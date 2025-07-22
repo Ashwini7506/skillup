@@ -2,7 +2,7 @@
 
 import { useWorkspaceId } from "@/hooks/use-workspace-id"
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar"
-import { CheckSquare, Home, Settings, Users, ChevronRight } from "lucide-react"
+import { CheckSquare, Home, Settings, Users, ChevronRight, Workflow } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -19,6 +19,14 @@ export const NavMain = () => {
             path: "home",
             gradient: "from-blue-500 to-cyan-500",
             bgHover: "hover:bg-blue-50 dark:hover:bg-blue-950/50"
+        },
+        {
+            label: "Sprints",
+            href: `/workspace/${workspaceId}/sprint`,
+            icon: Workflow,
+            path: "sprint",
+            gradient: "from-orange-500 to-red-500",
+            bgHover: "hover:bg-orange-50 dark:hover:bg-orange-950/50"
         },
         {
             label: "Curate projects",
