@@ -173,7 +173,7 @@ const SprintExplanationPage = () => {
               <CardContent className="p-0">
                 <div className="aspect-video bg-black relative overflow-hidden">
                   <iframe
-                    src="https://www.youtube.com/embed/NhDQPFhe-1I?si=GSloVCzWzpzkR7Fk"
+                    src="https://www.youtube.com/embed/_lGEE1ZkOqY?si=uFgD8CecCTA6LKDJ"
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -190,7 +190,7 @@ const SprintExplanationPage = () => {
                     </div>
                     <Button 
                       className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3"
-                      onClick={() => window.open('https://youtu.be/NhDQPFhe-1I', '_blank')}
+                      onClick={() => window.open('https://youtu.be/_lGEE1ZkOqY?si=gpA6E5C73OU_yGf2', '_blank')}
                     >
                       <Play className="w-5 h-5 mr-2" />
                       Watch Full Story
