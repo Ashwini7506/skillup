@@ -173,7 +173,7 @@ const SprintExplanationPage = () => {
               <CardContent className="p-0">
                 <div className="aspect-video bg-black relative overflow-hidden">
                   <iframe
-                    src="https://youtu.be/NhDQPFhe-1I"
+                    src="https://www.youtube.com/embed/NhDQPFhe-1I?si=GSloVCzWzpzkR7Fk"
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
