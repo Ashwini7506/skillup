@@ -185,7 +185,7 @@ const SprintExplanationPage = () => {
                     <div>
                       <h3 className="text-2xl font-bold text-black mb-2">SKILLUP SPRINT 2024</h3>
                       <p className="text-black/70 font-medium">
-                        🔥 Epic 48-hour journey from idea to impact
+                        🔥 Epic 4-weeks journey from idea to impact
                       </p>
                     </div>
                     <Button 
